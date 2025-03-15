@@ -13,7 +13,7 @@ const Navbar = () => {
         </div>
 
         <ul className="flex space-x-8">
-          {["Dashboard", "Investments", "Transactions", "Profile","Market"].map(
+          {["Dashboard", "Investments", "Crypto", "Trade","Market","InvestHub"].map(
             (item) => (
               <li key={item}>
                 <a
