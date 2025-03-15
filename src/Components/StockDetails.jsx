@@ -1,5 +1,5 @@
-import React from "react";
 import { Star, DollarSign } from "lucide-react";
+import React, { useState, useEffect } from "react";
 import.meta.env.VITE_FINNHUB_API_KEY;
 
 // Icons for companies (upgraded with glowing effect)

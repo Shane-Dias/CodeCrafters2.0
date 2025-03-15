@@ -41,8 +41,6 @@ function App() {
         <Route path="/view/:id" element={<View />} />
         <Route path="/crypto" element={<Crypto />} />
         <Route path="/trade" element={<Trade />} />
-        
-        
         <Route path="/register" element={<SignUp />} />
         <Route path="/login" element={<Login />} />
         <Route path="/dashboard" element={<Dashboard />} />
@@ -51,8 +49,8 @@ function App() {
         <Route path="/news" element={<News />} /> {/* Add the news route */}
         <Route path="/chatbot" element={<Chatbot />} />
         <Route path="/compare-stocks" element={<StockComparison />} />
-        
-        
+        <Route path="/signup" element={<Signup />} />
+        <Route path="/login" element={<Login />} />
       </Routes>
     </BrowserRouter>
   );
