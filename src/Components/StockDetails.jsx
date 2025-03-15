@@ -1,5 +1,6 @@
 import React from "react";
 import { Star, DollarSign } from "lucide-react";
+import { useState, useEffect } from "react";
 
 // Icons for companies (upgraded with glowing effect)
 const StockIcon = ({ symbol }) => {
