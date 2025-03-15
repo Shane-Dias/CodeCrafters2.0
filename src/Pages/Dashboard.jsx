@@ -3,6 +3,7 @@ import { Wallet, TrendingUp, BarChart2, Shield, PieChart, Home, FileText, Activi
 import { ResponsiveContainer, LineChart, CartesianGrid, XAxis, YAxis, Tooltip, Line } from "recharts";
 import { Card, CardContent } from "../Components/Card";
 import { Button } from "../Components/Button";
+import Navbar from "../Components/Navbar";
 
 const data = [
   { name: "Jan", profit: 4000 },
@@ -30,7 +31,8 @@ const Sidebar = () => {
 
 const Dashboard = () => {
   return (
-    <div className="flex">
+    <>
+    <div className="flex pt-14">
       <Sidebar />
       <div className="flex-1 min-h-screen bg-[#0a192f] text-white p-6 flex flex-col gap-6">
         <h1 className="text-4xl font-bold text-cyan-400 text-center drop-shadow-[0_0_10px_cyan]">Investment Dashboard</h1>
@@ -78,6 +80,7 @@ const Dashboard = () => {
         </div>
       </div>
     </div>
+          </>
   );
 };
 
