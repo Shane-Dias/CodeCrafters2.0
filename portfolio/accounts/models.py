@@ -11,38 +11,37 @@ class CustomUserManager(BaseUserManager):
         user.save(using=self._db)
         return user
 
-    def create_superuser(self, email, phone_number, address, bank_account, password=None):
+    def create_superuser(self, email, phone_number, address, bank_account, password):
         user = self.create_user(email, phone_number, address, bank_account, password)
-        user.is_admin = True
+        user.is_staff = True
         user.is_superuser = True
         user.save(using=self._db)
         return user
 
 class CustomUser(AbstractBaseUser, PermissionsMixin):
     email = models.EmailField(unique=True)
-    phone_number = models.CharField(max_length=15, unique=True)
+    phone_number = models.CharField(max_length=15)
     address = models.TextField()
-    bank_account = models.CharField(max_length=30, unique=True)
+    bank_account = models.CharField(max_length=50)
 
     is_active = models.BooleanField(default=True)
-    is_admin = models.BooleanField(default=False)
+    is_staff = models.BooleanField(default=False)
 
-    # Fix for SystemCheckError
     groups = models.ManyToManyField(
         "auth.Group",
-        related_name="custom_user_groups",  # Avoid conflict with default User model
+        related_name="customuser_set",  # Fix conflict
         blank=True
     )
     user_permissions = models.ManyToManyField(
         "auth.Permission",
-        related_name="custom_user_permissions",  # Avoid conflict
+        related_name="customuser_permissions_set",  # Fix conflict
         blank=True
     )
 
     objects = CustomUserManager()
 
-    USERNAME_FIELD = 'email'
-    REQUIRED_FIELDS = ['phone_number', 'address', 'bank_account']
+    USERNAME_FIELD = "email"
+    REQUIRED_FIELDS = ["phone_number", "address", "bank_account"]
 
     def __str__(self):
         return self.email

@@ -1,5 +1,4 @@
 import { useState } from "react";
-import axios from "axios";
 
 const SignUp = () => {
   const [formData, setFormData] = useState({
@@ -11,7 +10,10 @@ const SignUp = () => {
   });
 
   const handleChange = (e) => {
-    setFormData({ ...formData, [e.target.name]: e.target.value });
+    setFormData((prevState) => ({
+      ...prevState,
+      [e.target.name]: e.target.value,
+    }));
   };
 
   const handleSubmit = async (e) => {
@@ -29,10 +31,12 @@ const SignUp = () => {
       if (response.ok) {
         alert("User Registered Successfully!");
       } else {
+        console.error("Registration Error:", data);
         alert("Error: " + JSON.stringify(data));
       }
     } catch (error) {
-      console.error("Error:", error);
+      console.error("Network Error:", error);
+      alert("Network Error. Please try again.");
     }
   };
 
