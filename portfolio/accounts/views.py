@@ -2,7 +2,7 @@ from rest_framework.views import APIView
 from rest_framework.response import Response
 from rest_framework import status
 from django.contrib.auth import get_user_model, authenticate
-from rest_framework_simplejwt.tokens import RefreshToken
+from rest_framework_simplejwt.tokens import RefreshToken, AccessToken
 from rest_framework.permissions import IsAuthenticated
 from rest_framework.decorators import api_view, permission_classes
 from django.http import JsonResponse
@@ -38,9 +38,13 @@ class LoginUser(APIView):
         password = request.data.get("password")
         user = authenticate(email=email, password=password)
         if user is not None:
-            tokens = get_tokens_for_user(user)
+            refresh = RefreshToken.for_user(user)
             serializer = UserSerializer(user)
-            return Response({"message": "Login Successful!", "user": serializer.data, "tokens": tokens}, status=status.HTTP_200_OK)
+            return Response({"message": "Login Successful!", "user": serializer.data, 
+                             "tokens": {
+                                        "access": str(refresh.access_token),
+                                        "refresh": str(refresh)
+                }}, status=status.HTTP_200_OK)
         return Response({"error": "Invalid credentials"}, status=status.HTTP_400_BAD_REQUEST)
 
 class GetUser(APIView):
