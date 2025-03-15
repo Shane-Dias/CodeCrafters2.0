@@ -7,6 +7,8 @@ import Home from "./Pages/Home";
 import Navbar from "./Components/Navbar";
 import Dashboard from "./Pages/Dashboard";
 import Market from "./Pages/Market";
+import Investhub from "./Pages/Investhub";
+import View from "./Pages/View";
 
 
 function App() {
@@ -18,6 +20,8 @@ function App() {
         <Route path="/" element={<Home />} />
         <Route path="/dashboard" element={<Dashboard />} />
         <Route path="/market" element={<Market />} />
+        <Route path="/investhub" element={<Investhub />} />
+        <Route path="/view/:id" element={<View />} />
         
         
       </Routes>
