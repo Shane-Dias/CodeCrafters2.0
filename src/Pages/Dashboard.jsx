@@ -3,7 +3,6 @@ import { Wallet, TrendingUp, BarChart2, Shield, PieChart, Home, FileText, Activi
 import { ResponsiveContainer, LineChart, CartesianGrid, XAxis, YAxis, Tooltip, Line } from "recharts";
 import { Card, CardContent } from "../Components/Card";
 import { Button } from "../Components/Button";
-import Navbar from "../Components/Navbar";
 
 const data = [
   { name: "Jan", profit: 4000 },

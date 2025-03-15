@@ -22,7 +22,17 @@ const AssetsMarketplace = () => {
   const API_KEY = import.meta.env.VITE_FINNHUB_API_KEY || "demo_key";
 
   // Stock symbols to fetch (moved from StockDetails)
-  const SYMBOLS = ["AAPL", "GOOGL", "MSFT", "AMZN", "TSLA"];
+  const SYMBOLS = [
+    "AAPL",
+    "GOOGL",
+    "MSFT",
+    "AMZN",
+    "TSLA",
+    "RELIANCE",
+    "TCS",
+    "INFY",
+    "HDFCBANK",
+  ];
 
   // Company name mapping (moved from StockDetails)
   const COMPANY_NAMES = {
@@ -31,6 +41,10 @@ const AssetsMarketplace = () => {
     MSFT: "Microsoft Corp.",
     AMZN: "Amazon.com Inc.",
     TSLA: "Tesla Inc.",
+    RELIANCE: "Reliance Industries Ltd.",
+    TCS: "Tata Consultancy Services Ltd.",
+    INFY: "Infosys Ltd.",
+    HDFCBANK: "HDFC Bank Ltd.",
   };
 
   // Fetch stock data (initial load)
