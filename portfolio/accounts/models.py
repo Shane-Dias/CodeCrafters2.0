@@ -45,3 +45,17 @@ class CustomUser(AbstractBaseUser, PermissionsMixin):
 
     def __str__(self):
         return self.email
+
+from django.db import models
+from django.conf import settings
+
+class StockPurchase(models.Model):
+    user = models.ForeignKey(settings.AUTH_USER_MODEL, on_delete=models.CASCADE)
+    symbol = models.CharField(max_length=10)
+    company_name = models.CharField(max_length=255)
+    price = models.FloatField()
+    quantity = models.IntegerField()
+    purchased_at = models.DateTimeField(auto_now_add=True)
+
+    def __str__(self):
+        return f"{self.user.email} - {self.symbol} - {self.quantity} shares"
