@@ -23,6 +23,7 @@ const Login = () => {
 
       const data = await response.json();
       if (response.ok) {
+        sessionStorage.setItem("access_token", data.access);
         alert("Login Successful!");
         console.log("User Data:", data.user);
       } else {
@@ -37,8 +38,20 @@ const Login = () => {
     <div className="login-container">
       <h2>Login</h2>
       <form onSubmit={handleSubmit}>
-        <input type="email" name="email" placeholder="Email" onChange={handleChange} required />
-        <input type="password" name="password" placeholder="Password" onChange={handleChange} required />
+        <input
+          type="email"
+          name="email"
+          placeholder="Email"
+          onChange={handleChange}
+          required
+        />
+        <input
+          type="password"
+          name="password"
+          placeholder="Password"
+          onChange={handleChange}
+          required
+        />
         <button type="submit">Login</button>
       </form>
     </div>
