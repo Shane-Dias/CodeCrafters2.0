@@ -31,15 +31,97 @@ const StockIcon = ({ symbol }) => {
   );
 };
 
-const StockDetails = ({
-  stocks = [],
-  viewMode = "card",
-  requestSort,
-  watchlist = [],
-  toggleWatchlist,
-}) => {
-  // Handle loading state when no stocks are available
-  if (!stocks || stocks.length === 0) {
+const StockDetails = () => {
+  const [stocks, setStocks] = useState([]);
+  const [loading, setLoading] = useState(true);
+  const [error, setError] = useState(null);
+  const [sortConfig, setSortConfig] = useState({
+    key: "symbol",
+    direction: "ascending",
+  });
+  const [viewMode, setViewMode] = useState("card"); // 'card' or 'table'
+
+  const SYMBOLS = ["AAPL", "GOOGL", "MSFT", "AMZN", "TSLA"]; // Example stock symbols
+
+  useEffect(() => {
+    const fetchStockData = async () => {
+      try {
+        const stockData = await Promise.all(
+          SYMBOLS.map(async (symbol) => {
+            const response = await fetch(
+              `https://finnhub.io/api/v1/quote?symbol=${symbol}&token=${API_KEY}`
+            );
+            if (!response.ok) {
+              throw new Error(`Failed to fetch data for ${symbol}`);
+            }
+            const data = await response.json();
+            return {
+              symbol,
+              companyName: COMPANY_NAMES[symbol] || symbol,
+              ...data,
+            };
+          })
+        );
+        setStocks(stockData);
+        setLoading(false);
+      } catch (err) {
+        setError(err.message);
+        setLoading(false);
+      }
+    };
+
+    fetchStockData();
+  }, []);
+
+  // Sorting logic
+  const requestSort = (key) => {
+    let direction = "ascending";
+    if (sortConfig.key === key && sortConfig.direction === "ascending") {
+      direction = "descending";
+    }
+    setSortConfig({ key, direction });
+  };
+
+  const getSortedStocks = () => {
+    const sortableStocks = [...stocks];
+    if (sortConfig.key) {
+      sortableStocks.sort((a, b) => {
+        if (a[sortConfig.key] < b[sortConfig.key]) {
+          return sortConfig.direction === "ascending" ? -1 : 1;
+        }
+        if (a[sortConfig.key] > b[sortConfig.key]) {
+          return sortConfig.direction === "ascending" ? 1 : -1;
+        }
+        return 0;
+      });
+    }
+    return sortableStocks;
+  };
+
+  //User Buying Stocks Script
+  const handleBuy = async (stock) => {
+    const response = await fetch("http://127.0.0.1:8000/api/accounts/buy/", {
+      method: "POST",
+      headers: {
+        "Content-Type": "application/json",
+        Authorization: `Bearer ${localStorage.getItem("token")}`, // Ensure the user is authenticated
+      },
+      body: JSON.stringify({
+        symbol: stock.symbol,
+        company_name: stock.companyName,
+        price: stock.c,
+        quantity: 1, // Default quantity
+      }),
+    });
+
+    if (response.ok) {
+      alert("Stock purchased successfully!");
+    } else {
+      alert("Failed to purchase stock.");
+    }
+  };
+
+  if (loading) {
     return (
       <div className="py-24 bg-gray-900 text-gray-200 flex justify-center items-center h-64">
         <div className="w-16 h-16 border-4 border-indigo-400 border-t-transparent rounded-full animate-spin drop-shadow-[0_0_10px_rgba(79,70,229,0.6)]"></div>
@@ -152,7 +234,10 @@ const StockDetails = ({
                 </div>
 
                 <div className="mt-4 flex justify-between">
-                  <button className="py-2 px-4 rounded-lg bg-indigo-600 hover:bg-indigo-700 text-white text-sm font-medium shadow-lg shadow-indigo-500/50 hover:shadow-indigo-500/70 transition-all duration-300">
+                  <button
+                    onClick={() => handleBuy(stock)}
+                    className="py-2 px-4 rounded-lg bg-gray-700 text-cyan-400 text-sm font-medium shadow-[3px_3px_6px_rgba(0,0,0,0.25),-3px_-3px_6px_rgba(70,70,70,0.08)] hover:shadow-[inset_3px_3px_6px_rgba(0,0,0,0.25),inset_-3px_-3px_6px_rgba(70,70,70,0.08)] transition-all duration-300 border border-cyan-900/30 hover:drop-shadow-[0_0_5px_rgba(34,211,238,0.5)]"
+                  >
                     Buy
                   </button>
                   <button className="py-2 px-4 rounded-lg bg-gray-700 border border-gray-600 hover:bg-gray-600 text-gray-200 text-sm font-medium shadow-lg shadow-gray-700/50 hover:shadow-gray-700/70 transition-all duration-300">
@@ -279,5 +364,4 @@ const StockDetails = ({
     </section>
   );
 };
-
 export default StockDetails;
