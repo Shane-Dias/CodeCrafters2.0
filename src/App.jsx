@@ -34,7 +34,6 @@ function App() {
         {/* <Route path="/" element={<RegistrationForm />}></Route> */}
         <Route path="/dashboard" element={<Dashboard />} />
         <Route path="/market" element={<Market />} />
-        <Route path="/invest_sugg" element={<InvestmentForm />} />
         <Route path="/investhub" element={<Investhub />} />
         <Route path="/view/:id" element={<View />} />
         <Route path="/crypto" element={<Crypto />} />
@@ -48,6 +47,7 @@ function App() {
         <Route path="/stockchart" element={<StockChart />} />
         <Route path="/news" element={<News />} /> {/* Add the news route */}
         <Route path="/chatbot" element={<Chatbot />} />
+        <Route path="/investmentsuggestions" element={<InvestmentForm />} />
       </Routes>
     </BrowserRouter>
   );
