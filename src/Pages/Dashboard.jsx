@@ -1,11 +1,6 @@
 import React from "react";
-import { Wallet, TrendingUp, BarChart2, Shield, PieChart, Home, FileText, Activity, Settings } from "lucide-react";
-import { ResponsiveContainer, LineChart, CartesianGrid, XAxis, YAxis, Tooltip, Line } from "recharts";
 import { Card, CardContent } from "../Components/Card";
 import { Button } from "../Components/Button";
-import React from 'react';
-import { Card, CardContent } from '../Components/Card';
-import { Button } from '../Components/Button';
 import { 
   Wallet, 
   TrendingUp, 

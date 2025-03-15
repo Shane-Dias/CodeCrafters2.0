@@ -24,6 +24,9 @@ function App() {
         {/* <Route path="/" element={<RegistrationForm />}></Route> */}
         <Route path="/dashboard" element={<Dashboard />} />
         <Route path="/market" element={<Market />} />
+        <Route path="/invest_sugg" element={<InvestmentForm />} />
+        <Route path="/investhub" element={<Investhub />} />
+        <Route path="/view/:id" element={<View />} />
         
         
       </Routes>
