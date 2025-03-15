@@ -136,7 +136,7 @@ const TradingDashboard = () => {
     
     <div className="flex flex-1 overflow-hidden">
       {/* Asset list */}
-      <div className="w-64 bg-gray-800 shadow-lg shadow-indigo-500/30 border-r-2 border-indigo-500/50 overflow-y-auto">
+      <div className="w-64 bg-gray-800 shadow-lg shadow-indigo-500/30 border-r-2 border-indigo-500/50 overflow-y-auto scroll-container">
         {isLoading ? (
           <div className="flex justify-center items-center h-32">
             <RefreshCw className="animate-spin h-6 w-6 text-indigo-400" />
@@ -175,7 +175,7 @@ const TradingDashboard = () => {
       </div>
       
       {/* Main content */}
-      <div className="flex-1 p-4 overflow-y-auto">
+      <div className="flex-1 p-4 overflow-y-auto scroll-container">
         {currentAsset && (
           <>
             <div className="bg-gray-800 rounded-xl shadow-lg shadow-indigo-500/30 border-2 border-indigo-500/50 p-4 mb-4">

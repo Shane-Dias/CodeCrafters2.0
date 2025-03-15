@@ -23,11 +23,13 @@ import View from "./Pages/View";
 import Crypto from "./Pages/Crypto";
 import Trade from "./Pages/Trade";
 import StockChart from "./Components/StockChart";
+import Exchange from "./Pages/Exchange";
+import Transaction from "./Pages/Transaction";
 
 function App() {
   return (
     <BrowserRouter>
-      {/* <Navbar /> */}
+      <Navbar />
       <Routes>
         <Route path="/" element={<Home />} />
         {/* <Route path="/about" element={<About />} /> */}
@@ -48,6 +50,8 @@ function App() {
         <Route path="/stockchart" element={<StockChart />} />
         <Route path="/news" element={<News />} /> {/* Add the news route */}
         <Route path="/chatbot" element={<Chatbot />} />
+        <Route path="/exchange" element={<Exchange />} />
+        <Route path="/transaction" element={<Transaction />} />
       </Routes>
     </BrowserRouter>
   );
