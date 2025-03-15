@@ -3,5 +3,5 @@ from . import views
 
 urlpatterns = [
     path('recommend_portfolio/', views.recommend_portfolio, name='recommend_portfolio'),
-    path('user/<int:user_id>/', GetUser.as_view(), name='get_user'),
+    path('chatbot/', views.ChatbotView_Therapist.as_view(), name='get_user'),
 ]
