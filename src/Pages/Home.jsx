@@ -9,7 +9,6 @@ const Home = () => {
     <div>
       <Navbar />
       <Hero />
-      <StockDetails />
       <Home_Dash />
       <InvestmentSuggestions />
     </div>

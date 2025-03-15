@@ -8,6 +8,8 @@ import Login from "./Components/Login"
 
 import News from "./Components/News";
 
+import StockComparison from "./Components/StockComparison";
+
 import Chatbot from "./Components/chartbotTrial";
 
 import Navbar from "./Components/Navbar";
@@ -29,6 +31,7 @@ function App() {
         <Route path="/stockchart" element={<StockChart />} />
         <Route path="/news" element={<News />} /> {/* Add the news route */}
         <Route path="/chatbot" element={<Chatbot />} />
+        <Route path="/compare-stocks" element={<StockComparison />} />
         
         
       </Routes>
