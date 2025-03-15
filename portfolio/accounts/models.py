@@ -22,6 +22,7 @@ class CustomUser(AbstractBaseUser, PermissionsMixin):
     email = models.EmailField(unique=True)
     phone_number = models.CharField(max_length=15)
     address = models.TextField()
+    wallet = models.PositiveBigIntegerField(default=0)
     bank_account = models.CharField(max_length=50)
 
     is_active = models.BooleanField(default=True)
@@ -59,3 +60,11 @@ class StockPurchase(models.Model):
 
     def __str__(self):
         return f"{self.user.email} - {self.symbol} - {self.quantity} shares"
+
+class Transaction(models.Model):
+    id = models.AutoField(primary_key=True)
+    user = models.ForeignKey(settings.AUTH_USER_MODEL, on_delete=models.CASCADE)
+    stock_purchase = models.ForeignKey(StockPurchase, on_delete=models.CASCADE)
+    
+    def __str__(self):
+        return f"{self.user.email} - {self.stock_purchase.symbol} - {self.stock_purchase.quantity} shares"
