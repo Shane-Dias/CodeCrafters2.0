@@ -9,15 +9,18 @@ const AssetsMarketplace = () => {
   const [searchQuery, setSearchQuery] = useState('');
   const [sortBy, setSortBy] = useState('trending');
   
-  // Mock data initialization
+  // Mock data initialization with image placeholders
   useEffect(() => {
     const mockAssets = [
-      { id: 1, name: 'Apple Inc.', symbol: 'AAPL', type: 'Stock', price: 178.42, change: 2.35, changePercent: 1.33 },
-      { id: 2, name: 'Microsoft', symbol: 'MSFT', type: 'Stock', price: 332.18, change: 3.21, changePercent: 0.98 },
-      { id: 3, name: 'Bitcoin', symbol: 'BTC', type: 'Crypto', price: 42876.13, change: -1087.22, changePercent: -2.47 },
-      { id: 4, name: 'Ethereum', symbol: 'ETH', type: 'Crypto', price: 2283.64, change: -32.18, changePercent: -1.39 },
-      { id: 5, name: 'Tesla Inc.', symbol: 'TSLA', type: 'Stock', price: 245.30, change: 5.62, changePercent: 2.35 },
-      { id: 6, name: 'Gold', symbol: 'GLD', type: 'Commodity', price: 2391.45, change: 12.56, changePercent: 0.53 },
+      { id: 1, name: 'Apple Inc.', symbol: 'AAPL', type: 'Stock', price: 178.42, change: 2.35, changePercent: 1.33, logo: '/api/placeholder/60/60?text=AAPL' },
+      { id: 2, name: 'Microsoft', symbol: 'MSFT', type: 'Stock', price: 332.18, change: 3.21, changePercent: 0.98, logo: '/api/placeholder/60/60?text=MSFT' },
+      { id: 3, name: 'Bitcoin', symbol: 'BTC', type: 'Crypto', price: 42876.13, change: -1087.22, changePercent: -2.47, logo: '/api/placeholder/60/60?text=BTC' },
+      { id: 4, name: 'Ethereum', symbol: 'ETH', type: 'Crypto', price: 2283.64, change: -32.18, changePercent: -1.39, logo: '/api/placeholder/60/60?text=ETH' },
+      { id: 5, name: 'Tesla Inc.', symbol: 'TSLA', type: 'Stock', price: 245.30, change: 5.62, changePercent: 2.35, logo: '/api/placeholder/60/60?text=TSLA' },
+      { id: 6, name: 'Gold', symbol: 'GLD', type: 'Commodity', price: 2391.45, change: 12.56, changePercent: 0.53, logo: '/api/placeholder/60/60?text=GLD' },
+      { id: 7, name: 'S&P 500 ETF', symbol: 'SPY', type: 'ETF', price: 489.32, change: 2.42, changePercent: 0.50, logo: '/api/placeholder/60/60?text=SPY' },
+      { id: 8, name: 'Solana', symbol: 'SOL', type: 'Crypto', price: 124.54, change: 8.21, changePercent: 7.06, logo: '/api/placeholder/60/60?text=SOL' },
+      { id: 9, name: 'Silver', symbol: 'SLV', type: 'Commodity', price: 28.63, change: -0.42, changePercent: -1.45, logo: '/api/placeholder/60/60?text=SLV' },
     ];
     setAssets(mockAssets);
     setFilteredAssets(mockAssets);
@@ -50,6 +53,8 @@ const AssetsMarketplace = () => {
 
   // Utility functions
   const getChangeColor = (change) => change > 0 ? 'text-emerald-400' : change < 0 ? 'text-red-400' : 'text-gray-400';
+  const getChangeIcon = (change) => change > 0 ? '↑' : change < 0 ? '↓' : '→';
+  
   const getAssetTypeBorder = (type) => {
     const borders = {
       'Stock': 'border-blue-700',
@@ -58,6 +63,16 @@ const AssetsMarketplace = () => {
       'Commodity': 'border-yellow-700'
     };
     return borders[type] || 'border-gray-700';
+  };
+  
+  const getAssetTypeBackground = (type) => {
+    const backgrounds = {
+      'Stock': 'bg-blue-500/10',
+      'Crypto': 'bg-purple-500/10',
+      'ETF': 'bg-green-500/10',
+      'Commodity': 'bg-yellow-500/10'
+    };
+    return backgrounds[type] || 'bg-gray-500/10';
   };
 
   return (
@@ -147,24 +162,42 @@ const AssetsMarketplace = () => {
               className={`p-6 rounded-2xl bg-transparent border-[4px] ${getAssetTypeBorder(asset.type)} shadow-lg hover:scale-105 transition-all`}
             >
               <div className="flex justify-between items-center mb-4">
-                <span className="px-3 py-1 rounded-full font-bold text-white bg-blue-800 bg-opacity-20">
-                  {asset.type}
-                </span>
+                <div className="flex items-center gap-3">
+                  <div className={`p-1 rounded-lg ${getAssetTypeBackground(asset.type)}`}>
+                    <img 
+                      src={asset.logo} 
+                      alt={asset.symbol} 
+                      className="w-10 h-10 rounded"
+                    />
+                  </div>
+                  <span className="px-3 py-1 rounded-full font-bold text-white bg-blue-800 bg-opacity-20">
+                    {asset.type}
+                  </span>
+                </div>
                 <Star 
                   className={`w-6 h-6 cursor-pointer ${watchlist.includes(asset.id) ? 'text-yellow-400 fill-yellow-400' : 'text-gray-400'}`}
                   onClick={() => toggleWatchlist(asset.id)}
                 />
               </div>
               
-              <div className="flex justify-between mb-2">
+              <div className="flex justify-between mb-4">
                 <h3 className="text-lg font-semibold text-white">{asset.name}</h3>
                 <p className="text-white font-bold">{asset.symbol}</p>
+              </div>
+              
+              {/* Price chart placeholder */}
+              <div className="mb-4 w-full h-16 bg-white/5 rounded-lg overflow-hidden">
+                <img 
+                  src={`/api/placeholder/320/100?text=Chart+${asset.changePercent > 0 ? 'Up' : 'Down'}`} 
+                  alt="Price Chart" 
+                  className="w-full h-full object-cover opacity-70"
+                />
               </div>
               
               <div className="flex justify-between items-center">
                 <p className="text-2xl font-bold text-white">${asset.price.toLocaleString()}</p>
                 <div className={`flex items-center ${getChangeColor(asset.change)}`}>
-                  {asset.changePercent > 0 ? '+' : ''}{asset.changePercent.toFixed(2)}%
+                  {getChangeIcon(asset.change)} {asset.changePercent > 0 ? '+' : ''}{asset.changePercent.toFixed(2)}%
                 </div>
               </div>
               
