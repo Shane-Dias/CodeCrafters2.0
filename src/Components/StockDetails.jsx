@@ -1,5 +1,6 @@
 import React from "react";
 import { Star, DollarSign } from "lucide-react";
+import.meta.env.VITE_FINNHUB_API_KEY;
 
 // Icons for companies (upgraded with glowing effect)
 const StockIcon = ({ symbol }) => {
@@ -236,12 +237,9 @@ const StockDetails = () => {
                 <div className="mt-4 flex justify-between">
                   <button
                     onClick={() => handleBuy(stock)}
-                    className="py-2 px-4 rounded-lg bg-gray-700 text-cyan-400 text-sm font-medium shadow-[3px_3px_6px_rgba(0,0,0,0.25),-3px_-3px_6px_rgba(70,70,70,0.08)] hover:shadow-[inset_3px_3px_6px_rgba(0,0,0,0.25),inset_-3px_-3px_6px_rgba(70,70,70,0.08)] transition-all duration-300 border border-cyan-900/30 hover:drop-shadow-[0_0_5px_rgba(34,211,238,0.5)]"
+                    className="py-2 px-4 rounded-lg bg-gray-700 text-cyan-400 text-sm font-medium shadow-[3px_3px_6px_rgba(0,0,0,0.25),-3px_-3px_6px_rgba(70,70,70,0.08)] hover:shadow-[inset_3px_3px_6px_rgba(0,0,0,0.25),inset_-3px_-3px_6px_rgba(70,70,70,0.08)] transition-all duration-300 border border-cyan-900/30 hover:drop-shadow-[0_0_5px_rgba(34,211,238,0.5)] center"
                   >
                     Buy
-                  </button>
-                  <button className="py-2 px-4 rounded-lg bg-gray-700 border border-gray-600 hover:bg-gray-600 text-gray-200 text-sm font-medium shadow-lg shadow-gray-700/50 hover:shadow-gray-700/70 transition-all duration-300">
-                    Details
                   </button>
                 </div>
               </div>

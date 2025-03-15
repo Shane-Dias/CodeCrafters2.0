@@ -60,11 +60,3 @@ class StockPurchase(models.Model):
 
     def __str__(self):
         return f"{self.user.email} - {self.symbol} - {self.quantity} shares"
-
-class Transaction(models.Model):
-    id = models.AutoField(primary_key=True)
-    user = models.ForeignKey(settings.AUTH_USER_MODEL, on_delete=models.CASCADE)
-    stock_purchase = models.ForeignKey(StockPurchase, on_delete=models.CASCADE)
-    
-    def __str__(self):
-        return f"{self.user.email} - {self.stock_purchase.symbol} - {self.stock_purchase.quantity} shares"
