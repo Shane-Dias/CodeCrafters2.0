@@ -6,7 +6,7 @@ import Home from "./Pages/Home";
 import SignUp from "./Components/SignUp";
 import Login from "./Components/Login"
 
-import News from "./components/News";
+import News from "./Components/News";
 
 import Chatbot from "./Components/chartbotTrial";
 
