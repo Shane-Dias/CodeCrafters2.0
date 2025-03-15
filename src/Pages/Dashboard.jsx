@@ -1,6 +1,6 @@
-import React from 'react';
-import { Card, CardContent } from '../Components/Card';
-import { Button } from '../Components/Button';
+import React from "react";
+import { Card, CardContent } from "../Components/Card";
+import { Button } from "../Components/Button";
 import { 
   Wallet, 
   TrendingUp, 
