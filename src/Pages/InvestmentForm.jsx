@@ -1,128 +1,471 @@
-import { useState } from "react";
-import { useWatchlist } from "../Context/WatchlistContext";
+import { useState, useEffect } from "react";
+import {
+  DollarSign,
+  TrendingUp,
+  AlertCircle,
+  PieChart,
+  CheckCircle,
+  ArrowLeft,
+  CreditCard,
+  Bookmark,
+} from "lucide-react";
 
 const InvestmentForm = () => {
-  const { watchlist } = useWatchlist();
-  const [selectedStocks, setSelectedStocks] = useState([]);
   const [investmentAmount, setInvestmentAmount] = useState("");
   const [riskLevel, setRiskLevel] = useState("Medium");
   const [volatility, setVolatility] = useState(0.15);
+  const [showModal, setShowModal] = useState(false);
+  const [watchlist, setWatchlist] = useState([]);
 
-  // Handle stock selection
-  const handleStockSelect = (stock) => {
-    if (!selectedStocks.includes(stock)) {
-      setSelectedStocks([...selectedStocks, stock]);
+  // Retrieve watchlist from localStorage on component mount
+  useEffect(() => {
+    const savedWatchlist = localStorage.getItem("watchlist");
+    if (savedWatchlist) {
+      setWatchlist(JSON.parse(savedWatchlist));
+    } else {
+      // Default watchlist for demo purposes
+      setWatchlist(["AAPL", "GOOGL", "MSFT", "AMZN"]);
     }
-  };
+  }, []);
 
   // Handle form submit
   const handleSubmit = (e) => {
     e.preventDefault();
-    console.log({
-      selectedStocks,
-      investmentAmount,
-      riskLevel,
-      volatility,
-    });
+    setShowModal(true);
+  };
+
+  // Handle buy stocks
+  const handleBuy = () => {
+    alert("Stocks purchased successfully!");
+    setShowModal(false);
+  };
+
+  // Handle back button in modal
+  const handleBack = () => {
+    setShowModal(false);
   };
 
   return (
-    <form
-      onSubmit={handleSubmit}
-      className="max-w-lg mx-auto p-6 bg-gray-800 text-white rounded-lg shadow-md"
-    >
-      <h2 className="text-2xl font-bold mb-4">Invest in Stocks</h2>
+    <div className="min-h-screen p-6 md:p-12 flex items-center justify-center bg-gray-900">
+      {/* Main Container */}
+      <div className="w-full max-w-lg mt-10">
+        {/* Form Card */}
+        <form
+          onSubmit={handleSubmit}
+          className="rounded-3xl p-8 relative"
+          style={{
+            backgroundColor: "#1a1a2e",
+            boxShadow:
+              "20px 20px 60px rgba(0, 0, 0, 0.4), -5px -5px 20px rgba(59, 59, 90, 0.2)",
+          }}
+        >
+          {/* Header with gradient effect */}
+          <div
+            className="absolute top-0 left-0 right-0 h-24 rounded-t-3xl overflow-hidden"
+            style={{
+              background:
+                "linear-gradient(135deg, rgba(80, 200, 220, 0.1), rgba(150, 100, 240, 0.1))",
+              zIndex: "0",
+            }}
+          ></div>
 
-      {/* Stock Dropdown */}
-      <div className="mb-4">
-        <label className="block mb-2">Select Stocks</label>
-        <select
-          onChange={(e) => handleStockSelect(e.target.value)}
-          className="w-full bg-gray-700 border border-gray-600 p-2 rounded-md"
-        >
-          <option value="" disabled selected>
-            Select a stock
-          </option>
-          {watchlist.map((stock) => (
-            <option key={stock} value={stock}>
-              {stock}
-            </option>
-          ))}
-        </select>
-        <button
-          type="button"
-          onClick={() => setSelectedStocks(watchlist)}
-          className="mt-2 bg-cyan-500 text-white px-3 py-1 rounded-md"
-        >
-          Select All from Watchlist
-        </button>
+          <div className="relative z-10">
+            <div className="mb-8 flex items-center">
+              <div
+                className="mr-4 p-3 rounded-xl"
+                style={{
+                  backgroundColor: "#252542",
+                  boxShadow:
+                    "5px 5px 10px rgba(0, 0, 0, 0.3), -2px -2px 5px rgba(59, 59, 90, 0.2)",
+                }}
+              >
+                <PieChart size={24} className="text-cyan-400" />
+              </div>
+              <h2 className="text-3xl font-extrabold tracking-tight text-gray-200">
+                Stock <span style={{ color: "#06b6d4" }}>Investment</span>
+              </h2>
+            </div>
+
+            {/* Watchlist Section */}
+            <div className="mb-8">
+              <div className="flex items-center mb-4">
+                <Bookmark size={18} className="mr-2 text-purple-400" />
+                <h3 className="text-lg font-semibold text-gray-200">
+                  Your Watchlist
+                </h3>
+              </div>
+              <div className="flex flex-wrap gap-2">
+                {watchlist.map((stock) => (
+                  <div
+                    key={stock}
+                    className="py-2 px-3 rounded-xl relative"
+                    style={{
+                      backgroundColor: "#252542",
+                      boxShadow:
+                        "inset 3px 3px 7px rgba(0, 0, 0, 0.3), inset -1px -1px 3px rgba(59, 59, 90, 0.2)",
+                    }}
+                  >
+                    <span
+                      className="font-medium"
+                      style={{
+                        background: "linear-gradient(90deg, #06b6d4, #b388ff)",
+                        WebkitBackgroundClip: "text",
+                        WebkitTextFillColor: "transparent",
+                      }}
+                    >
+                      {stock}
+                    </span>
+                  </div>
+                ))}
+              </div>
+            </div>
+
+            {/* Investment Amount */}
+            <div className="mb-6">
+              <label className="block mb-3 text-gray-300 font-medium">
+                <div className="flex items-center">
+                  <DollarSign size={18} className="mr-2 text-cyan-400" />
+                  Investment Amount
+                </div>
+              </label>
+              <div
+                className="rounded-xl p-1"
+                style={{
+                  backgroundColor: "#252542",
+                  boxShadow:
+                    "inset 5px 5px 10px rgba(0, 0, 0, 0.3), inset -1px -1px 3px rgba(59, 59, 90, 0.2)",
+                }}
+              >
+                <input
+                  type="number"
+                  value={investmentAmount}
+                  onChange={(e) => setInvestmentAmount(e.target.value)}
+                  placeholder="Enter amount"
+                  required
+                  className="w-full px-4 py-3 bg-transparent border-none rounded-lg focus:outline-none text-gray-200"
+                />
+              </div>
+            </div>
+
+            {/* Risk Level */}
+            <div className="mb-6">
+              <label className="block mb-3 text-gray-300 font-medium">
+                <div className="flex items-center">
+                  <AlertCircle size={18} className="mr-2 text-cyan-400" />
+                  Risk Level
+                </div>
+              </label>
+
+              {/* Custom Radio Button Group */}
+              <div
+                className="flex bg-gray-100 p-1 rounded-xl"
+                style={{
+                  backgroundColor: "#252542",
+                  boxShadow:
+                    "inset 5px 5px 10px rgba(0, 0, 0, 0.3), inset -1px -1px 3px rgba(59, 59, 90, 0.2)",
+                }}
+              >
+                {["Low", "Medium", "High"].map((level) => (
+                  <div
+                    key={level}
+                    className={`flex-1 relative ${
+                      riskLevel === level ? "z-10" : ""
+                    }`}
+                  >
+                    <input
+                      type="radio"
+                      name="riskLevel"
+                      id={`risk-${level}`}
+                      value={level}
+                      checked={riskLevel === level}
+                      onChange={() => setRiskLevel(level)}
+                      className="sr-only"
+                    />
+                    <label
+                      htmlFor={`risk-${level}`}
+                      className={`block text-center py-3 px-4 cursor-pointer transition-all duration-200 text-sm font-medium rounded-lg ${
+                        riskLevel === level
+                          ? "text-white"
+                          : "text-gray-400 hover:text-gray-200"
+                      }`}
+                      style={
+                        riskLevel === level
+                          ? {
+                              background:
+                                "linear-gradient(135deg, #06b6d4, #b388ff)",
+                              boxShadow:
+                                "3px 3px 6px rgba(0, 0, 0, 0.3), -1px -1px 3px rgba(59, 59, 90, 0.2)",
+                            }
+                          : {}
+                      }
+                    >
+                      {level}
+                    </label>
+                  </div>
+                ))}
+              </div>
+            </div>
+
+            {/* Volatility (if Medium) */}
+            {riskLevel === "Medium" && (
+              <div className="mb-6">
+                <label className="block mb-3 text-gray-300 font-medium">
+                  <div className="flex items-center">
+                    <TrendingUp size={18} className="mr-2 text-cyan-400" />
+                    Volatility (%)
+                  </div>
+                </label>
+
+                {/* Custom Range Slider */}
+                <div className="px-2">
+                  <input
+                    type="range"
+                    min="0"
+                    max="100"
+                    step="1"
+                    value={volatility * 100}
+                    onChange={(e) => setVolatility(e.target.value / 100)}
+                    className="w-full h-2 rounded-lg appearance-none cursor-pointer"
+                    style={{
+                      background: "linear-gradient(to right, #06b6d4, #b388ff)",
+                      boxShadow:
+                        "inset 2px 2px 5px rgba(0, 0, 0, 0.3), inset -1px -1px 3px rgba(59, 59, 90, 0.2)",
+                    }}
+                  />
+                  <div className="flex justify-between mt-2">
+                    <span className="text-xs text-gray-400">Low</span>
+                    <span className="text-sm font-medium text-gray-300">
+                      {(volatility * 100).toFixed(0)}%
+                    </span>
+                    <span className="text-xs text-gray-400">High</span>
+                  </div>
+                </div>
+              </div>
+            )}
+
+            {/* Submit Button */}
+            <div className="mt-8">
+              <button
+                type="submit"
+                className="w-full py-4 px-6 rounded-xl font-bold text-white relative overflow-hidden transition-all duration-300"
+                style={{
+                  background: "linear-gradient(135deg, #06b6d4, #b388ff)",
+                  boxShadow:
+                    "6px 6px 12px rgba(0, 0, 0, 0.3), -2px -2px 6px rgba(59, 59, 90, 0.2)",
+                }}
+              >
+                <span className="relative z-10 flex items-center justify-center">
+                  <CreditCard className="mr-2" size={20} />
+                  Invest Now
+                </span>
+              </button>
+            </div>
+          </div>
+        </form>
       </div>
 
-      {/* Display Selected Stocks */}
-      {selectedStocks.length > 0 && (
-        <div className="mb-4">
-          <p className="mb-2">Selected Stocks:</p>
-          <div className="flex flex-wrap gap-2">
-            {selectedStocks.map((stock) => (
-              <span
-                key={stock}
-                className="bg-gray-600 px-2 py-1 rounded text-sm"
+      {/* Modal for Results */}
+      {showModal && (
+        <div
+          className="fixed inset-0 flex items-center justify-center z-50 p-4"
+          style={{ backdropFilter: "blur(5px)" }}
+        >
+          <div
+            className="w-full max-w-md p-8 rounded-3xl"
+            style={{
+              backgroundColor: "#1a1a2e",
+              boxShadow:
+                "20px 20px 60px rgba(0, 0, 0, 0.4), -5px -5px 20px rgba(59, 59, 90, 0.2)",
+            }}
+          >
+            <div className="relative z-10">
+              <div className="flex items-center mb-6">
+                <div
+                  className="mr-4 p-3 rounded-xl"
+                  style={{
+                    backgroundColor: "#252542",
+                    boxShadow:
+                      "5px 5px 10px rgba(0, 0, 0, 0.3), -2px -2px 5px rgba(59, 59, 90, 0.2)",
+                  }}
+                >
+                  <CheckCircle size={24} className="text-cyan-400" />
+                </div>
+                <h2 className="text-2xl font-bold text-gray-200">
+                  Investment Summary
+                </h2>
+              </div>
+
+              {/* Results Panel */}
+              <div
+                className="p-6 rounded-2xl mb-6"
+                style={{
+                  backgroundColor: "#252542",
+                  boxShadow:
+                    "inset 5px 5px 10px rgba(0, 0, 0, 0.3), inset -1px -1px 3px rgba(59, 59, 90, 0.2)",
+                }}
               >
-                {stock}
-              </span>
-            ))}
+                {/* Expected Returns */}
+                <div className="mb-4">
+                  <div className="text-sm text-gray-400 mb-1">
+                    Expected Annual Returns
+                  </div>
+                  <div
+                    className="text-2xl font-bold"
+                    style={{
+                      background: "linear-gradient(90deg, #06b6d4, #b388ff)",
+                      WebkitBackgroundClip: "text",
+                      WebkitTextFillColor: "transparent",
+                    }}
+                  >
+                    8.5%
+                  </div>
+                </div>
+
+                <div className="grid grid-cols-2 gap-4 mb-4">
+                  {/* Annual Volatility */}
+                  <div>
+                    <div className="text-sm text-gray-400 mb-1">
+                      Annual Volatility
+                    </div>
+                    <div className="text-lg font-semibold text-gray-200">
+                      12.3%
+                    </div>
+                  </div>
+
+                  {/* Sharpe Ratio */}
+                  <div>
+                    <div className="text-sm text-gray-400 mb-1">
+                      Sharpe Ratio
+                    </div>
+                    <div className="text-lg font-semibold text-gray-200">
+                      0.69
+                    </div>
+                  </div>
+                </div>
+
+                {/* Allocation */}
+                <div className="mb-4">
+                  <div className="text-sm text-gray-400 mb-2">
+                    Dynamic Allocation
+                  </div>
+
+                  {/* AAPL */}
+                  <div className="mb-2">
+                    <div className="flex justify-between text-sm mb-1">
+                      <span className="font-medium text-gray-300">AAPL</span>
+                      <span className="font-medium text-gray-300">40%</span>
+                    </div>
+                    <div
+                      className="w-full h-2 rounded-full overflow-hidden"
+                      style={{
+                        backgroundColor: "#1a1a2e",
+                        boxShadow:
+                          "inset 2px 2px 5px rgba(0, 0, 0, 0.3), inset -1px -1px 3px rgba(59, 59, 90, 0.2)",
+                      }}
+                    >
+                      <div
+                        className="h-full rounded-full"
+                        style={{
+                          width: "40%",
+                          background:
+                            "linear-gradient(90deg, #06b6d4, #b388ff)",
+                        }}
+                      ></div>
+                    </div>
+                  </div>
+
+                  {/* GOOGL */}
+                  <div className="mb-2">
+                    <div className="flex justify-between text-sm mb-1">
+                      <span className="font-medium text-gray-300">GOOGL</span>
+                      <span className="font-medium text-gray-300">30%</span>
+                    </div>
+                    <div
+                      className="w-full h-2 rounded-full overflow-hidden"
+                      style={{
+                        backgroundColor: "#1a1a2e",
+                        boxShadow:
+                          "inset 2px 2px 5px rgba(0, 0, 0, 0.3), inset -1px -1px 3px rgba(59, 59, 90, 0.2)",
+                      }}
+                    >
+                      <div
+                        className="h-full rounded-full"
+                        style={{
+                          width: "30%",
+                          background:
+                            "linear-gradient(90deg, #06b6d4, #b388ff)",
+                        }}
+                      ></div>
+                    </div>
+                  </div>
+
+                  {/* MSFT */}
+                  <div>
+                    <div className="flex justify-between text-sm mb-1">
+                      <span className="font-medium text-gray-300">MSFT</span>
+                      <span className="font-medium text-gray-300">30%</span>
+                    </div>
+                    <div
+                      className="w-full h-2 rounded-full overflow-hidden"
+                      style={{
+                        backgroundColor: "#1a1a2e",
+                        boxShadow:
+                          "inset 2px 2px 5px rgba(0, 0, 0, 0.3), inset -1px -1px 3px rgba(59, 59, 90, 0.2)",
+                      }}
+                    >
+                      <div
+                        className="h-full rounded-full"
+                        style={{
+                          width: "30%",
+                          background:
+                            "linear-gradient(90deg, #06b6d4, #b388ff)",
+                        }}
+                      ></div>
+                    </div>
+                  </div>
+                </div>
+
+                {/* Funds Remaining */}
+                <div>
+                  <div className="text-sm text-gray-400 mb-1">
+                    Funds Remaining
+                  </div>
+                  <div className="text-lg font-bold text-green-400">$500</div>
+                </div>
+              </div>
+
+              {/* Modal Buttons */}
+              <div className="flex gap-4">
+                <button
+                  onClick={handleBack}
+                  className="flex-1 py-3 rounded-xl font-medium text-gray-300 flex items-center justify-center"
+                  style={{
+                    backgroundColor: "#252542",
+                    boxShadow:
+                      "5px 5px 10px rgba(0, 0, 0, 0.3), -2px -2px 5px rgba(59, 59, 90, 0.2)",
+                  }}
+                >
+                  <ArrowLeft className="mr-2" size={18} />
+                  Back
+                </button>
+                <button
+                  onClick={handleBuy}
+                  className="flex-1 py-3 rounded-xl font-bold text-white flex items-center justify-center"
+                  style={{
+                    background: "linear-gradient(135deg, #06b6d4, #b388ff)",
+                    boxShadow:
+                      "5px 5px 10px rgba(0, 0, 0, 0.3), -2px -2px 5px rgba(59, 59, 90, 0.2)",
+                  }}
+                >
+                  <CreditCard className="mr-2" size={18} />
+                  Buy Stocks
+                </button>
+              </div>
+            </div>
           </div>
         </div>
       )}
-
-      {/* Investment Amount */}
-      <div className="mb-4">
-        <label className="block mb-2">Investment Amount</label>
-        <input
-          type="number"
-          value={investmentAmount}
-          onChange={(e) => setInvestmentAmount(e.target.value)}
-          className="w-full bg-gray-700 border border-gray-600 p-2 rounded-md"
-          placeholder="Enter amount"
-        />
-      </div>
-
-      {/* Risk Level */}
-      <div className="mb-4">
-        <label className="block mb-2">Risk Level</label>
-        <select
-          value={riskLevel}
-          onChange={(e) => setRiskLevel(e.target.value)}
-          className="w-full bg-gray-700 border border-gray-600 p-2 rounded-md"
-        >
-          <option value="Low">Low</option>
-          <option value="Medium">Medium</option>
-          <option value="High">High</option>
-        </select>
-      </div>
-
-      {/* Volatility (if Medium) */}
-      {riskLevel === "Medium" && (
-        <div className="mb-4">
-          <label className="block mb-2">Volatility (%)</label>
-          <input
-            type="number"
-            value={volatility}
-            onChange={(e) => setVolatility(e.target.value)}
-            className="w-full bg-gray-700 border border-gray-600 p-2 rounded-md"
-            placeholder="Enter volatility"
-          />
-        </div>
-      )}
-
-      {/* Submit Button */}
-      <button
-        type="submit"
-        className="bg-cyan-500 w-full py-2 rounded-md font-semibold"
-      >
-        Submit
-      </button>
-    </form>
+    </div>
   );
 };
 
