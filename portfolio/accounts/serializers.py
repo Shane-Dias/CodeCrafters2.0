@@ -17,3 +17,12 @@ class UserSerializer(serializers.ModelSerializer):
             password=validated_data['password']  # Django automatically hashes this
         )
         return user
+    
+from rest_framework import serializers
+from .models import StockPurchase
+
+class StockPurchaseSerializer(serializers.ModelSerializer):
+    class Meta:
+        model = StockPurchase
+        fields = ['id', 'user', 'symbol', 'company_name', 'price', 'quantity', 'purchased_at']
+

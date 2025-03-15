@@ -5,7 +5,7 @@ const StockChart = ({ ticker = "AAPL" }) => {
   const [stockData, setStockData] = useState([]);
 
   useEffect(() => {
-    fetch(`http://127.0.0.1:8000/get_stock_data/${ticker}`)
+    fetch(`http://127.0.0.1:8000/api/accounts/get_stock_data/${ticker}`)
       .then(response => response.json())
       .then(data => setStockData(data.data))
       .catch(error => console.error("Error fetching stock data:", error));
