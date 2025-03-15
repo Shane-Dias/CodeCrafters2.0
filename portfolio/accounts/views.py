@@ -1,3 +1,5 @@
+from sqlite3 import IntegrityError
+from portfolio.accounts import admin
 from rest_framework.views import APIView
 from rest_framework.response import Response
 from rest_framework import status
@@ -91,3 +93,95 @@ def get_stock_data(request, ticker="AAPL"):
     df['Date'] = df['Date'].astype(str)
     stock_data = df[['Date', 'Open', 'High', 'Low', 'Close']].to_dict(orient="records")
     return JsonResponse({"data": stock_data})
+
+
+# Register and Login Script with Token Generaton
+
+from rest_framework_simplejwt.tokens import RefreshToken, AccessToken
+import logging
+logger = logging.getLogger(__name__)
+from rest_framework import generics, status
+class SignUpView(APIView):
+    def post(self, request):
+        data = request.data
+
+        # Validate required fields
+        required_fields = [
+            "firstName", "lastName", "email", "phoneNumber",
+            "address", "aadharNumber", "emergencyContact1",
+            "emergencyContact2", "password"
+        ]
+        for field in required_fields:
+            if not data.get(field):
+                return Response({field: f"{field} is required"}, status=status.HTTP_400_BAD_REQUEST)
+
+        # Check for unique constraints
+        if User.objects.filter(email=data["email"]).exists():
+            return Response({"email": "Email already exists"}, status=status.HTTP_400_BAD_REQUEST)
+
+        # Save user
+        try:
+            user = User.objects.create(
+                first_name=data["firstName"],
+                last_name=data["lastName"],
+                email=data["email"],  # Use email as username
+                password=make_password(data["password"])  # Hash the password
+            )
+
+            # Add custom fields if you're using a custom User model
+            user.phone_number = data["phoneNumber"]
+            user.address = data["address"]
+            user.aadhar_number = data["aadharNumber"]
+            user.emergency_contact1 = data["emergencyContact1"]
+            user.emergency_contact2 = data["emergencyContact2"]
+            user.save()
+
+            return Response({"message": "User created successfully"}, status=status.HTTP_201_CREATED)
+
+        except IntegrityError:
+            return Response({"error": "An error occurred while creating the user."}, status=status.HTTP_500_INTERNAL_SERVER_ERROR)
+
+class LoginView(APIView):
+    def post(self, request):
+        email = request.data.get('email')
+        password = request.data.get('password')
+
+        # Input validation
+        if not email or not password:
+            return Response({
+                "error": "Both email and password are required."
+            }, status=status.HTTP_400_BAD_REQUEST)
+
+        try:
+            # Determine if it's an admin or regular user login
+            if email.endswith("@admin.com"):
+                user = get_object_or_404(admin, email=email)
+                user_type = "admin"
+            else:
+                user = get_object_or_404(User, email=email)
+                user_type = "user"
+
+            # Verify password
+            if not check_password(password, user.password):
+                return Response({
+                    "error": "Invalid credentials"
+                }, status=status.HTTP_401_UNAUTHORIZED)
+
+            # Generate JWT tokens
+            refresh = RefreshToken.for_user(user)
+            return Response({
+                "message": "Login successful",
+                "user_type": user_type,
+                "user_id": user.id,
+                "email": user.email,
+                "tokens": {
+                    "access": str(refresh.access_token),
+                    "refresh": str(refresh)
+                }
+            }, status=status.HTTP_200_OK)
+
+        except Exception as e:
+            return Response({
+                "error": "Invalid credentials"
+            }, status=status.HTTP_401_UNAUTHORIZED)
+        
