@@ -40,7 +40,7 @@ INSTALLED_APPS = [
     "rest_framework",
     'accounts',
     'recommendations',
-    'rest_framework',
+    'corsheaders',
 ]
 
 REST_FRAMEWORK = {

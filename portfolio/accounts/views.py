@@ -47,3 +47,19 @@ class LoginUser(APIView):
             return Response({"message": "Login Successful!", "user": serializer.data}, status=status.HTTP_200_OK)
         else:
             return Response({"error": "Invalid credentials"}, status=status.HTTP_400_BAD_REQUEST)
+
+import yfinance as yf
+from django.http import JsonResponse
+from datetime import datetime, timedelta
+
+def get_stock_data(request, ticker="AAPL"):
+    stock = yf.Ticker(ticker)
+    end_date = datetime.today()
+    start_date = end_date - timedelta(days=30)
+
+    df = stock.history(period="1mo", interval="1d")  # Fetch last 1-month data
+    df.reset_index(inplace=True)
+    df['Date'] = df['Date'].astype(str)
+
+    stock_data = df[['Date', 'Open', 'High', 'Low', 'Close']].to_dict(orient="records")
+    return JsonResponse({"data": stock_data})
