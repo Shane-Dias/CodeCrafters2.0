@@ -111,12 +111,22 @@ const AssetsMarketplace = () => {
     setFilteredAssets(result);
   }, [assets, assetType, searchQuery, sortBy]);
 
+  // Load watchlist from localStorage
+  useEffect(() => {
+    const storedWatchlist = JSON.parse(localStorage.getItem("watchlist")) || [];
+    setWatchlist(storedWatchlist);
+  }, []);
+
   const toggleWatchlist = (id) => {
-    setWatchlist(
-      watchlist.includes(id)
-        ? watchlist.filter((item) => item !== id)
-        : [...watchlist, id]
-    );
+    let updatedWatchlist;
+    if (watchlist.includes(id)) {
+      updatedWatchlist = watchlist.filter((item) => item !== id);
+    } else {
+      updatedWatchlist = [...watchlist, id];
+    }
+
+    setWatchlist(updatedWatchlist);
+    localStorage.setItem("watchlist", JSON.stringify(updatedWatchlist));
   };
 
   // Utility functions
@@ -175,15 +185,19 @@ const AssetsMarketplace = () => {
             <TrendingUp className="text-emerald-400 w-12 h-12 group-hover:scale-110 transition-transform" />
           </div>
 
-          <div className="bg-white/5 p-6 rounded-2xl border-[4px] border-yellow-700 shadow-lg flex items-center justify-between group w-64 md:w-80 hover:scale-105 transition-all">
-            <div>
-              <h3 className="text-gray-400 font-medium mb-1">Your Watchlist</h3>
-              <p className="text-3xl font-bold text-white">
-                {watchlist.length}
-              </p>
+          <a href="/investmentsuggestions" className="cursor-pointer">
+            <div className="bg-white/5 p-6 rounded-2xl border-[4px] border-yellow-700 shadow-lg flex items-center justify-between group w-64 md:w-80 hover:scale-105 transition-all">
+              <div>
+                <h3 className="text-gray-400 font-medium mb-1">
+                  Your Watchlist
+                </h3>
+                <p className="text-3xl font-bold text-white">
+                  {watchlist.length}
+                </p>
+              </div>
+              <Star className="text-yellow-400 w-12 h-12 group-hover:scale-110 transition-transform" />
             </div>
-            <Star className="text-yellow-400 w-12 h-12 group-hover:scale-110 transition-transform" />
-          </div>
+          </a>
         </div>
 
         {/* Adding search/filter controls from original AssetsMarketplace */}

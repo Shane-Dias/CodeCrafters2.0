@@ -25,18 +25,19 @@ import View from "./Pages/View";
 import Crypto from "./Pages/Crypto";
 import Trade from "./Pages/Trade";
 import StockChart from "./Components/StockChart";
+import Exchange from "./Pages/Exchange";
+import Transaction from "./Pages/Transaction";
 
 function App() {
   return (
     <BrowserRouter>
-      {/* <Navbar /> */}
+      <Navbar />
       <Routes>
         <Route path="/" element={<Home />} />
         {/* <Route path="/about" element={<About />} /> */}
         {/* <Route path="/" element={<RegistrationForm />}></Route> */}
         <Route path="/dashboard" element={<Dashboard />} />
         <Route path="/market" element={<Market />} />
-        <Route path="/invest_sugg" element={<InvestmentForm />} />
         <Route path="/investhub" element={<Investhub />} />
         <Route path="/view/:id" element={<View />} />
         <Route path="/crypto" element={<Crypto />} />
@@ -48,9 +49,9 @@ function App() {
         <Route path="/stockchart" element={<StockChart />} />
         <Route path="/news" element={<News />} /> {/* Add the news route */}
         <Route path="/chatbot" element={<Chatbot />} />
-        <Route path="/compare-stocks" element={<StockComparison />} />
-        <Route path="/signup" element={<Signup />} />
-        <Route path="/login" element={<Login />} />
+        <Route path="/exchange" element={<Exchange />} />
+        <Route path="/transaction" element={<Transaction />} />
+        <Route path="/investmentsuggestions" element={<InvestmentForm />} />
       </Routes>
     </BrowserRouter>
   );

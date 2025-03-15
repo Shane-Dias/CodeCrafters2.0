@@ -1,14 +1,11 @@
 import { Star, DollarSign } from "lucide-react";
 import React, { useState, useEffect } from "react";
-import.meta.env.VITE_FINNHUB_API_KEY;
+const API_KEY = import.meta.env.VITE_FINNHUB_API_KEY;
 
 // Icons for companies (upgraded with glowing effect)
 const StockIcon = ({ symbol }) => {
-  const getIconLetter = () => {
-    return symbol.charAt(0);
-  };
+  const getIconLetter = () => symbol.charAt(0);
 
-  // Generate a consistent color based on the symbol
   const getSymbolColor = () => {
     const colors = [
       "text-indigo-400",
@@ -17,8 +14,7 @@ const StockIcon = ({ symbol }) => {
       "text-violet-400",
       "text-amber-400",
     ];
-    const index = symbol.charCodeAt(0) % colors.length;
-    return colors[index];
+    return colors[symbol.charCodeAt(0) % colors.length];
   };
 
   const shadowColor = getSymbolColor().replace("text", "shadow");
@@ -123,6 +119,29 @@ const StockDetails = () => {
   };
 
   if (loading) {
+const StockDetails = ({ stocks = [], viewMode = "card", requestSort }) => {
+  // Initialize watchlist state from localStorage
+  const [watchlist, setWatchlist] = useState(() => {
+    const savedWatchlist = localStorage.getItem("watchlist");
+    return savedWatchlist ? JSON.parse(savedWatchlist) : [];
+  });
+
+  // Update localStorage whenever watchlist changes
+  useEffect(() => {
+    localStorage.setItem("watchlist", JSON.stringify(watchlist));
+  }, [watchlist]);
+
+  // Toggle watchlist for a stock
+  const toggleWatchlist = (symbol) => {
+    setWatchlist((prev) =>
+      prev.includes(symbol)
+        ? prev.filter((item) => item !== symbol)
+        : [...prev, symbol]
+    );
+  };
+
+  // Handle loading state when no stocks are available
+  if (!stocks || stocks.length === 0) {
     return (
       <div className="py-24 bg-gray-900 text-gray-200 flex justify-center items-center h-64">
         <div className="w-16 h-16 border-4 border-indigo-400 border-t-transparent rounded-full animate-spin drop-shadow-[0_0_10px_rgba(79,70,229,0.6)]"></div>
@@ -362,5 +381,6 @@ const StockDetails = () => {
     </section>
   );
 };
+  };
 
 export default StockDetails;
