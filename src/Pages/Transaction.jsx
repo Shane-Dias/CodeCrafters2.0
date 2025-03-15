@@ -1,5 +1,7 @@
 import React, { useState } from 'react';
 import { CheckCircle, ArrowRight, Calendar, DollarSign, BarChart2, Clock, Download, Check } from 'lucide-react';
+import html2canvas from 'html2canvas';
+import jsPDF from 'jspdf';
 
 const TransactionConfirmation = () => {
   const [downloadStatus, setDownloadStatus] = useState(null);
@@ -80,6 +82,28 @@ Generated on ${new Date().toLocaleDateString()} at ${new Date().toLocaleTimeStri
     }, 1500);
   };
 
+  // Function to download the entire page as PDF
+  const downloadPageAsPDF = () => {
+    setDownloadStatus('downloading');
+    
+    // Capture the entire page content
+    html2canvas(document.body).then((canvas) => {
+      const imgData = canvas.toDataURL('image/png');
+      const pdf = new jsPDF('p', 'mm', 'a4');
+      const imgWidth = 210; // A4 width in mm
+      const imgHeight = (canvas.height * imgWidth) / canvas.width;
+      
+      pdf.addImage(imgData, 'PNG', 0, 0, imgWidth, imgHeight);
+      pdf.save(`InvestPro_Transaction_${transaction.confirmationNumber}.pdf`);
+      
+      // Update status
+      setDownloadStatus('completed');
+      
+      // Reset status after 3 seconds
+      setTimeout(() => setDownloadStatus(null), 3000);
+    });
+  };
+
   return (
     <div className="flex flex-col min-h-screen bg-gray-900 text-gray-100 pt-20">
       {/* Header */}
@@ -120,7 +144,7 @@ Generated on ${new Date().toLocaleDateString()} at ${new Date().toLocaleTimeStri
             {/* Download Button */}
             <div className="absolute top-4 right-4 z-20">
               <button 
-                onClick={generateTransactionPDF}
+                onClick={downloadPageAsPDF}
                 disabled={downloadStatus === 'downloading'}
                 className="flex items-center gap-1 py-1 px-3 bg-gray-700 hover:bg-gray-600 rounded-md text-gray-200 text-sm transition-all"
                 style={{
@@ -140,7 +164,7 @@ Generated on ${new Date().toLocaleDateString()} at ${new Date().toLocaleTimeStri
                 ) : (
                   <>
                     <Download size={16} />
-                    <span>Download</span>
+                    <span>Download PDF</span>
                   </>
                 )}
               </button>
