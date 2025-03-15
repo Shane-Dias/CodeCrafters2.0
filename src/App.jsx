@@ -11,6 +11,8 @@ import InvestmentForm from "./Pages/InvestmentForm";
 import Navbar from "./Components/Navbar";
 import Dashboard from "./Pages/Dashboard";
 import Market from "./Pages/Market";
+import Investhub from "./Pages/Investhub";
+import View from "./Pages/View";
 
 function App() {
   return (
@@ -22,7 +24,8 @@ function App() {
         {/* <Route path="/" element={<RegistrationForm />}></Route> */}
         <Route path="/dashboard" element={<Dashboard />} />
         <Route path="/market" element={<Market />} />
-        <Route path="/invest_sugg" element={<InvestmentForm />} />
+        
+        
       </Routes>
     </BrowserRouter>
   );
