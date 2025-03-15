@@ -21,6 +21,7 @@ import Market from "./Pages/Market";
 import Investhub from "./Pages/Investhub";
 import View from "./Pages/View";
 import Crypto from "./Pages/Crypto";
+import Trade from "./Pages/Trade";
 import StockChart from "./Components/StockChart";
 
 function App() {
@@ -37,6 +38,9 @@ function App() {
         <Route path="/investhub" element={<Investhub />} />
         <Route path="/view/:id" element={<View />} />
         <Route path="/crypto" element={<Crypto />} />
+        <Route path="/trade" element={<Trade />} />
+        
+        
         <Route path="/register" element={<SignUp />} />
         <Route path="/login" element={<Login />} />
         <Route path="/dashboard" element={<Dashboard />} />
