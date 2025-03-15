@@ -48,11 +48,18 @@ class LoginUser(APIView):
         return Response({"error": "Invalid credentials"}, status=status.HTTP_400_BAD_REQUEST)
 
 class GetUser(APIView):
-    permission_classes = [IsAuthenticated]
-    
     def get(self, request, user_id):
         try:
-            user = User.objects.get(id=user_id)
+            auth_header = request.META.get('HTTP_AUTHORIZATION')
+            if auth_header and auth_header.startswith('Bearer '):
+                try:
+                    token_str = auth_header.split(' ')[1]
+                    token = AccessToken(token_str)
+                    user = User.objects.get(id=token['user_id'])
+                except Exception as e:
+                    return Response({"error": "Invalid or expired token"}, status=status.HTTP_401_UNAUTHORIZED)
+            else:
+                return Response({"error": "No Authorization token"}, status=status.HTTP_401_UNAUTHORIZED)
             serializer = UserSerializer(user)
             return Response(serializer.data, status=status.HTTP_200_OK)
         except User.DoesNotExist:
@@ -60,9 +67,17 @@ class GetUser(APIView):
 
 @csrf_exempt
 @api_view(['POST'])
-@permission_classes([IsAuthenticated])
 def buy_stock(request):
-    user = request.user
+    auth_header = request.META.get('HTTP_AUTHORIZATION')
+    if auth_header and auth_header.startswith('Bearer '):
+        try:
+            token_str = auth_header.split(' ')[1]
+            token = AccessToken(token_str)
+            user = User.objects.get(id=token['user_id'])
+        except Exception as e:
+            return Response({"error": "Invalid or expired token"}, status=status.HTTP_401_UNAUTHORIZED)
+    else:
+        return Response({"error": "No Authorization token"}, status=status.HTTP_401_UNAUTHORIZED)
     symbol = request.data.get('symbol')
     company_name = request.data.get('company_name')
     price = request.data.get('price')
