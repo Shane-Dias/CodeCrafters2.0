@@ -15,8 +15,8 @@ const Navbar = () => {
             </a>
           </li>
           <li>
-            <a href="#transactions" className="hover:text-gray-400">
-              Transactions
+            <a href="/market" className="hover:text-gray-400">
+              Market
             </a>
           </li>
           <li>
