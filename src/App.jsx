@@ -2,20 +2,18 @@ import React from "react";
 import { BrowserRouter, Routes, Route } from "react-router-dom";
 
 import Home from "./Pages/Home";
+import InvestmentForm from "./Pages/InvestmentForm";
 // import { RegistrationForm } from "./components/RegistrationForm";
 // import { SignUp } from "./components/SignUp";
 // import Home from "./pages/Home";
 // import About from "./pages/About";
 
-
 import Navbar from "./Components/Navbar";
 import Dashboard from "./Pages/Dashboard";
 import Market from "./Pages/Market";
 
-
 function App() {
   return (
-    
     <BrowserRouter>
       <Navbar />
       <Routes>
@@ -24,11 +22,9 @@ function App() {
         {/* <Route path="/" element={<RegistrationForm />}></Route> */}
         <Route path="/dashboard" element={<Dashboard />} />
         <Route path="/market" element={<Market />} />
-        
-        
+        <Route path="/invest_sugg" element={<InvestmentForm />} />
       </Routes>
     </BrowserRouter>
-    
   );
 }
 
