@@ -5,7 +5,7 @@ const Navbar = () => {
         <div className="text-2xl font-bold">InvestPortal</div>
         <ul className="flex space-x-6">
           <li>
-            <a href="#dashboard" className="hover:text-gray-400">
+            <a href="/dashboard" className="hover:text-gray-400">
               Dashboard
             </a>
           </li>
