@@ -6,18 +6,29 @@ import Home from "./Pages/Home";
 // import { SignUp } from "./components/SignUp";
 // import Home from "./pages/Home";
 // import About from "./pages/About";
+
+
 import Navbar from "./Components/Navbar";
+import Dashboard from "./Pages/Dashboard";
+import Market from "./Pages/Market";
+
 
 function App() {
   return (
+    
     <BrowserRouter>
       <Navbar />
       <Routes>
         <Route path="/" element={<Home />} />
         {/* <Route path="/about" element={<About />} /> */}
         {/* <Route path="/" element={<RegistrationForm />}></Route> */}
+        <Route path="/dashboard" element={<Dashboard />} />
+        <Route path="/market" element={<Market />} />
+        
+        
       </Routes>
     </BrowserRouter>
+    
   );
 }
 
