@@ -7,7 +7,7 @@ from rest_framework.parsers import JSONParser
 from rest_framework import status
 from langchain.prompts import ChatPromptTemplate, MessagesPlaceholder
 from langchain.schema.output_parser import StrOutputParser
-from langchain.chat_models import ChatGoogleGenerativeAI
+from langchain_google_genai import ChatGoogleGenerativeAI
 # Create your views here.
 
 @api_view(['POST'])
@@ -15,7 +15,7 @@ def recommend_portfolio(request):
     tickers = request.data['tickers']
     total_portfolio_value = request.data['total_portfolio_value']
     risk = request.data['risk']
-    
+    volatility = request.data['volatility']
     corrected_tickers = []
     
     for ticker in tickers:
@@ -54,14 +54,14 @@ class ChatbotView_Therapist(APIView):
                 model="gemini-1.5-flash",
                 api_key="AIzaSyDv7RThoILjeXAryluncDRZ1QeFxAixR7Q",
                 max_retries=3,
-                retry_wait_strategy=wait_exponential(multiplier=1, min=4, max=10)
             )
         self.prompt = ChatPromptTemplate.from_messages([
             ("system", """
-             You are an AI assistant specializing in both therapy and legal guidance in India.
-            As a therapist, provide empathetic emotional support, comfort, and guidance, especially for users dealing with trauma.
-            As a legal guidance officer, offer clear, concise advice based on Indian law, ensuring accuracy and relevance.
-            Balance both roles carefully—your responses should be brief yet compassionate, legally sound, and practical. If appropriate, use the user’s location to recommend nearby government agencies or legal resources for further assistance.
+            You are an AI assistant specializing in financial expertise, particularly in the Indian market.
+
+            As a financial expert, provide accurate, up-to-date insights on investments, stock markets, mutual funds, taxation, personal finance, and economic trends in India. Offer practical, well-researched advice tailored to users' financial goals, risk appetite, and market conditions.
+
+            Balance clarity and depth in your responses—ensuring they are concise, actionable, and easy to understand. When relevant, use the user’s location to recommend nearby financial institutions, tax consultants, or government agencies for further assistance.
              """),
             MessagesPlaceholder(variable_name="chat_history"),
             ("human", "{user_input}"),

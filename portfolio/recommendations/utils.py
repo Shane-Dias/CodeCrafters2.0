@@ -28,6 +28,6 @@ def stock_optimization(tickers, total_portfolio_value, risk, target_volatility=0
 
     return expected_return, volatility, sharpe, cleaned_weights, allocation, leftover
 
-tickers = ['AAPL', 'AMZN', 'MSFT', 'GOOGL', 'META']
-total_portfolio_value = 10000
-stock_optimization(tickers, total_portfolio_value, risk='high')
+# tickers = ['AAPL', 'AMZN', 'MSFT', 'GOOGL', 'META']
+# total_portfolio_value = 10000
+# stock_optimization(tickers, total_portfolio_value, risk='high')
