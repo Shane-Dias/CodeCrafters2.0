@@ -14,6 +14,7 @@ import Market from "./Pages/Market";
 import Investhub from "./Pages/Investhub";
 import View from "./Pages/View";
 import Crypto from "./Pages/Crypto";
+import Trade from "./Pages/Trade";
 
 function App() {
   return (
@@ -29,6 +30,7 @@ function App() {
         <Route path="/investhub" element={<Investhub />} />
         <Route path="/view/:id" element={<View />} />
         <Route path="/crypto" element={<Crypto />} />
+        <Route path="/trade" element={<Trade />} />
         
         
       </Routes>
