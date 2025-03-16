@@ -28,6 +28,8 @@ import Trade from "./Pages/Trade";
 import StockChart from "./Components/StockChart";
 import Exchange from "./Pages/Exchange";
 import Transaction from "./Pages/Transaction";
+import SuccessPage from "./Pages/SuccessPage";
+import Footer from "./Components/Footer";
 
 function App() {
   return (
@@ -54,7 +56,9 @@ function App() {
         <Route path="/exchange" element={<Exchange />} />
         <Route path="/transaction" element={<Transaction />} />
         <Route path="/investmentsuggestions" element={<InvestmentForm />} />
+        <Route path="/success" element={<SuccessPage />} />
       </Routes>
+      <Footer />
     </BrowserRouter>
   );
 }

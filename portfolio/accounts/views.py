@@ -17,6 +17,7 @@ from django.contrib.auth.hashers import check_password, make_password
 import random
 from django.core.cache import cache
 import string
+from .models import CustomUser
 User = get_user_model()
 
 def get_tokens_for_user(user):
@@ -41,16 +42,34 @@ class LoginUser(APIView):
     def post(self, request):
         email = request.data.get("email")
         password = request.data.get("password")
-        user = authenticate(email=email, password=password)
-        if user is not None:
-            refresh = RefreshToken.for_user(user)
-            serializer = UserSerializer(user)
-            return Response({"message": "Login Successful!", "user": serializer.data, 
-                             "tokens": {
-                                        "access": str(refresh.access_token),
-                                        "refresh": str(refresh)
-                }}, status=status.HTTP_200_OK)
-        return Response({"error": "Invalid credentials"}, status=status.HTTP_400_BAD_REQUEST)
+        
+        # Validate that both email and password are provided
+        if not email or not password:
+            return Response({
+                "error": "Email and password are required"
+            }, status=status.HTTP_400_BAD_REQUEST)
+            
+        try:
+            user = get_object_or_404(User, email=email)
+            if check_password(password, user.password):
+                refresh = RefreshToken.for_user(user)
+                return Response({
+                    "message": "Login Successful!",
+                    "tokens": {
+                        "access": str(refresh.access_token),
+                        "refresh": str(refresh)
+                    }
+                }, status=status.HTTP_200_OK)
+            else:
+                # Don't specify which credential is invalid for security
+                return Response({
+                    "error": "Invalid credentials"
+                }, status=status.HTTP_401_UNAUTHORIZED)
+        except User.DoesNotExist:
+            # Use the same error message as password failure for security
+            return Response({
+                "error": "Invalid credentials"
+            }, status=status.HTTP_401_UNAUTHORIZED)
 
 class GetUser(APIView):
     def get(self, request, user_id):
@@ -70,6 +89,27 @@ class GetUser(APIView):
         except User.DoesNotExist:
             return Response({"error": "User not found"}, status=status.HTTP_404_NOT_FOUND)
 
+def get_stock_data(request, ticker="AAPL"):
+    stock = yf.Ticker(ticker)
+    df = stock.history(period="1d")
+    return df['Close']
+        
+def generate_otp(length=6):
+    """Generate a numeric OTP of specified length"""
+    return ''.join(random.choices(string.digits, k=length))
+
+def send_otp_email(email, otp, action="sell stock"):
+    """Send OTP to user's email"""
+    subject = "OTP for Stock Transaction"
+    message = f"Your OTP for {action} is: {otp}. This code will expire in 10 minutes."
+    send_mail(
+        subject,
+        message,
+        'mayankhmehta80@gmail.com',  # Replace with your sender email
+        [email],
+        fail_silently=False,
+    )
+
 @csrf_exempt
 @api_view(['POST'])
 def request_buy_stock(request):
@@ -80,47 +120,56 @@ def request_buy_stock(request):
         try:
             token_str = auth_header.split(' ')[1]
             token = AccessToken(token_str)
-            user = User.objects.get(id=token['user_id'])
+            print("hello")
+            user = CustomUser.objects.get(id=token['user_id'])
         except Exception:
             return Response({"error": "Invalid or expired token"}, status=status.HTTP_401_UNAUTHORIZED)
     else:
         return Response({"error": "No Authorization token"}, status=status.HTTP_401_UNAUTHORIZED)
-    
+
+    print("checking user done")
+
+    # Access data using request.data (DRF-specific)
     symbol = request.data.get('symbol')
     quantity = request.data.get('quantity', 1)
-    
+
     if not symbol:
         return Response({"error": "Stock symbol is required"}, status=status.HTTP_400_BAD_REQUEST)
-    
+
     try:
         quantity = int(quantity)
         if quantity <= 0:
             raise ValueError
     except ValueError:
         return Response({"error": "Quantity must be a positive integer"}, status=status.HTTP_400_BAD_REQUEST)
-    
+
     # Get current stock price (replace with your actual price retrieval logic)
     try:
-        stock_price = get_stock_data(ticker=symbol)  # You would implement this function
+        stock_price_series = get_stock_data(request, ticker=symbol)
+        # Convert the pandas Series to a float
+        stock_price = float(stock_price_series.iloc[0]) if not stock_price_series.empty else 0
     except Exception as e:
         return Response({"error": f"Could not get price for {symbol}: {str(e)}"}, status=status.HTTP_400_BAD_REQUEST)
-    
+
     # Calculate total cost
     total_cost = stock_price * quantity
-    
+    print("total_cost:", total_cost)
+
     # Check if user has enough funds
     if user.wallet < total_cost:
-        return Response({"error": "Insufficient funds", "required": total_cost, "available": user.wallet}, 
-                       status=status.HTTP_400_BAD_REQUEST)
-    
+        return Response(
+            {"error": "Insufficient funds", "required": total_cost, "available": user.wallet},
+            status=status.HTTP_400_BAD_REQUEST
+        )
+
     # Generate OTP and store in cache with transaction details
     otp = generate_otp()
     transaction_key = f"buy_stock_{user.id}_{symbol}_{quantity}_{stock_price}"
     cache.set(transaction_key, otp, timeout=600)  # 10 minutes expiry
-    
+
     # Send OTP to user's email
-    send_otp_email(user, otp, f"buy {quantity} shares of {symbol} at ${stock_price} per share")
-    
+    send_otp_email(user.email, otp, f"buy {quantity} shares of {symbol} at ${stock_price} per share")
+
     return Response({
         "message": "OTP sent to your email. Please verify to complete the purchase.",
         "transaction_key": transaction_key,
@@ -138,7 +187,7 @@ def confirm_buy_stock(request):
         try:
             token_str = auth_header.split(' ')[1]
             token = AccessToken(token_str)
-            user = User.objects.get(id=token['user_id'])
+            user = CustomUser.objects.get(id=token['user_id'])
         except Exception:
             return Response({"error": "Invalid or expired token"}, status=status.HTTP_401_UNAUTHORIZED)
     else:
@@ -219,7 +268,7 @@ def request_sell_stock(request):
         try:
             token_str = auth_header.split(' ')[1]
             token = AccessToken(token_str)
-            user = User.objects.get(id=token['user_id'])
+            user = CustomUser.objects.get(id=token['user_id'])
         except Exception:
             return Response({"error": "Invalid or expired token"}, status=status.HTTP_401_UNAUTHORIZED)
     else:
@@ -243,6 +292,13 @@ def request_sell_stock(request):
     if not user_stock or user_stock.quantity < quantity:
         return Response({"error": "Insufficient stock quantity"}, status=status.HTTP_400_BAD_REQUEST)
     
+    try:
+        stock_price_series = get_stock_data(request, ticker=symbol)
+        # Convert the pandas Series to a float
+        stock_price = float(stock_price_series.iloc[0]) if not stock_price_series.empty else 0
+    except Exception as e:
+        return Response({"error": f"Could not get price for {symbol}: {str(e)}"}, status=status.HTTP_400_BAD_REQUEST)
+
     # Generate OTP and store in cache with user_id, symbol and quantity
     otp = generate_otp()
     transaction_key = f"sell_stock_{user.id}_{symbol}_{quantity}"
@@ -257,30 +313,6 @@ def request_sell_stock(request):
     }, status=status.HTTP_200_OK)
 
 
-def get_stock_data(request, ticker="AAPL"):
-    stock = yf.Ticker(ticker)
-    df = stock.history(period="1mo", interval="1d")
-    df.reset_index(inplace=True)
-    df['Date'] = df['Date'].astype(str)
-    stock_data = df[['Date', 'Open', 'High', 'Low', 'Close']].to_dict(orient="records")
-    return JsonResponse({"data": stock_data})
-        
-def generate_otp(length=6):
-    """Generate a numeric OTP of specified length"""
-    return ''.join(random.choices(string.digits, k=length))
-
-def send_otp_email(user, otp, action="sell stock"):
-    """Send OTP to user's email"""
-    subject = "OTP for Stock Transaction"
-    message = f"Your OTP for {action} is: {otp}. This code will expire in 10 minutes."
-    send_mail(
-        subject,
-        message,
-        'mayankhmehta80@gmail.com',  # Replace with your sender email
-        [user.email],
-        fail_silently=False,
-    )
-
 @csrf_exempt
 @api_view(['POST'])
 def confirm_sell_stock(request):
@@ -291,7 +323,8 @@ def confirm_sell_stock(request):
         try:
             token_str = auth_header.split(' ')[1]
             token = AccessToken(token_str)
-            user = User.objects.get(id=token['user_id'])
+            print("hello")
+            user = CustomUser.objects.get(id=token['user_id'])
         except Exception:
             return Response({"error": "Invalid or expired token"}, status=status.HTTP_401_UNAUTHORIZED)
     else:
