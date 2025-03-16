@@ -24,11 +24,12 @@ const CryptoDashboard = () => {
   const [cryptoData, setCryptoData] = useState([]);
   const [userData, setUserData] = useState([]);
   const [isLoading, setIsLoading] = useState(true);
+  const [isLoading2, setIsLoading2] = useState(false);
+  const [showOtpModal, setShowOtpModal] = useState(false);
   const [selectedCrypto, setSelectedCrypto] = useState("bitcoin");
   const [purchaseAmount, setPurchaseAmount] = useState("");
   const [otp, setOtp] = useState("");
   const [otpError, setOtpError] = useState("");
-  const [showOtpModal, setShowOtpModal] = useState(false);
   const [transactionData, setTransactionData] = useState(null);
   const navigate = useNavigate();
 
@@ -98,6 +99,7 @@ const CryptoDashboard = () => {
     if (!purchaseAmount) return;
     const coin = cryptoData.find((c) => c.id === selectedCrypto);
     if (!coin) return;
+    setIsLoading2(true);
     const symbol = coin ? coin.symbol.toUpperCase() : "";
     const amount = parseFloat(purchaseAmount);
     const coinAmount = amount / coin.current_price;
@@ -129,15 +131,17 @@ const CryptoDashboard = () => {
           coinAmount: coinAmount,
           transactionId: data.transaction_key, // If your API returns this
         });
-
+        setIsLoading2(false);
         // Show OTP modal only if request was successful
         setShowOtpModal(true);
       } else {
         const errorData = await response.json();
+        setIsLoading2(false);
         alert(errorData.error || "Purchase request failed");
       }
     } catch (error) {
       console.error("Error:", error);
+      setIsLoading2(false);
       alert("Purchase request failed. Please try again.");
     }
   };
@@ -433,7 +437,7 @@ const CryptoDashboard = () => {
                 </ResponsiveContainer>
               </div>
 
-              <div className="mt-6">
+              <div className="mt-6 mr-8">
                 <div className="space-y-2">
                   <label className="block text-sm font-medium text-gray-300">
                     Buy Amount (USD)
@@ -452,6 +456,7 @@ const CryptoDashboard = () => {
                     >
                       Buy
                     </button>
+                    {isLoading2 && <div class="loader"></div>}
                   </div>
                 </div>
                 {purchaseAmount && (
