@@ -1,6 +1,15 @@
-import { Star, DollarSign } from "lucide-react";
+import { Star } from "lucide-react";
 import React, { useState, useEffect } from "react";
 const API_KEY = import.meta.env.VITE_FINNHUB_API_KEY;
+
+// Define company names
+const COMPANY_NAMES = {
+  AAPL: "Apple Inc.",
+  GOOGL: "Alphabet Inc.",
+  MSFT: "Microsoft Corporation",
+  AMZN: "Amazon.com Inc.",
+  TSLA: "Tesla Inc.",
+};
 
 // Icons for companies (upgraded with glowing effect)
 const StockIcon = ({ symbol }) => {
@@ -68,7 +77,7 @@ const StockDetails = () => {
     };
 
     fetchStockData();
-  }, []);
+  }, [SYMBOLS, API_KEY]);
 
   // Sorting logic
   const requestSort = (key) => {
@@ -83,52 +92,67 @@ const StockDetails = () => {
     const sortableStocks = [...stocks];
     if (sortConfig.key) {
       sortableStocks.sort((a, b) => {
-        if (a[sortConfig.key] < b[sortConfig.key]) {
-          return sortConfig.direction === "ascending" ? -1 : 1;
+        if (typeof a[sortConfig.key] === "number") {
+          return sortConfig.direction === "ascending"
+            ? a[sortConfig.key] - b[sortConfig.key]
+            : b[sortConfig.key] - a[sortConfig.key];
+        } else {
+          if (a[sortConfig.key] < b[sortConfig.key]) {
+            return sortConfig.direction === "ascending" ? -1 : 1;
+          }
+          if (a[sortConfig.key] > b[sortConfig.key]) {
+            return sortConfig.direction === "ascending" ? 1 : -1;
+          }
+          return 0;
         }
-        if (a[sortConfig.key] > b[sortConfig.key]) {
-          return sortConfig.direction === "ascending" ? 1 : -1;
-        }
-        return 0;
       });
     }
     return sortableStocks;
   };
 
-  //User Buying Stocks Script
+  // Handle buying stocks
   const handleBuy = async (stock) => {
-    const response = await fetch("http://127.0.0.1:8000/api/accounts/buy/", {
-      method: "POST",
-      headers: {
-        "Content-Type": "application/json",
-        Authorization: `Bearer ${sessionStorage.getItem("access_token")}`, // Ensure the user is authenticated
-      },
-      body: JSON.stringify({
-        symbol: stock.symbol,
-        company_name: stock.companyName,
-        price: stock.c,
-        quantity: 1, // Default quantity
-      }),
-    });
+    const accessToken = sessionStorage.getItem("access_token");
+    if (!accessToken) {
+      alert("You must be logged in to buy stocks.");
+      return;
+    }
 
-    if (response.ok) {
+    try {
+      const response = await fetch("http://127.0.0.1:8000/api/accounts/buy/", {
+        method: "POST",
+        headers: {
+          "Content-Type": "application/json",
+          Authorization: `Bearer ${accessToken}`,
+        },
+        body: JSON.stringify({
+          symbol: stock.symbol,
+          company_name: stock.companyName,
+          price: stock.c,
+          quantity: 1,
+        }),
+      });
+
+      if (!response.ok) {
+        const errorData = await response.json();
+        throw new Error(errorData.message || "Failed to purchase stock.");
+      }
+
       alert("Stock purchased successfully!");
-    } else {
-      alert("Failed to purchase stock.");
+    } catch (err) {
+      alert(`Error: ${err.message}`);
     }
   };
 
-  if (loading) {
-const StockDetails = ({ stocks = [], viewMode = "card", requestSort }) => {
   // Initialize watchlist state from localStorage
   const [watchlist, setWatchlist] = useState(() => {
-    const savedWatchlist = localStorage.getItem("watchlist");
+    const savedWatchlist = localStorage.getItem("stock-watchlist");
     return savedWatchlist ? JSON.parse(savedWatchlist) : [];
   });
 
   // Update localStorage whenever watchlist changes
   useEffect(() => {
-    localStorage.setItem("watchlist", JSON.stringify(watchlist));
+    localStorage.setItem("stock-watchlist", JSON.stringify(watchlist));
   }, [watchlist]);
 
   // Toggle watchlist for a stock
@@ -140,8 +164,7 @@ const StockDetails = ({ stocks = [], viewMode = "card", requestSort }) => {
     );
   };
 
-  // Handle loading state when no stocks are available
-  if (!stocks || stocks.length === 0) {
+  if (loading) {
     return (
       <div className="py-24 bg-gray-900 text-gray-200 flex justify-center items-center h-64">
         <div className="w-16 h-16 border-4 border-indigo-400 border-t-transparent rounded-full animate-spin drop-shadow-[0_0_10px_rgba(79,70,229,0.6)]"></div>
@@ -149,12 +172,42 @@ const StockDetails = ({ stocks = [], viewMode = "card", requestSort }) => {
     );
   }
 
+  if (error) {
+    return <div className="text-red-500">{error}</div>;
+  }
+
+  const sortedStocks = getSortedStocks();
+
   return (
     <section className="text-gray-200">
       <div className="container mx-auto">
+        {/* View Mode Toggle */}
+        <div className="flex justify-end mb-4">
+          <button
+            onClick={() => setViewMode("card")}
+            className={`px-4 py-2 mr-2 rounded-lg ${
+              viewMode === "card"
+                ? "bg-indigo-500 text-white"
+                : "bg-gray-700 text-gray-300"
+            }`}
+          >
+            Card View
+          </button>
+          <button
+            onClick={() => setViewMode("table")}
+            className={`px-4 py-2 rounded-lg ${
+              viewMode === "table"
+                ? "bg-indigo-500 text-white"
+                : "bg-gray-700 text-gray-300"
+            }`}
+          >
+            Table View
+          </button>
+        </div>
+
         {viewMode === "card" ? (
           <div className="grid grid-cols-1 md:grid-cols-2 lg:grid-cols-3 gap-6">
-            {stocks.map((stock, index) => (
+            {sortedStocks.map((stock, index) => (
               <div
                 key={index}
                 className="bg-gray-800 rounded-xl p-6 shadow-lg shadow-indigo-500/20 border-2 border-indigo-500/20 hover:shadow-indigo-500/30 hover:translate-y-[-5px] transition-all duration-300"
@@ -188,17 +241,15 @@ const StockDetails = ({ stocks = [], viewMode = "card", requestSort }) => {
 
                 <div className="flex items-baseline mb-4">
                   <span className="text-3xl font-bold text-indigo-400 drop-shadow-[0_0_5px_rgba(79,70,229,0.4)]">
-                    ${stock.price?.toFixed(2) || stock.c?.toFixed(2)}
+                    ${stock.c?.toFixed(2)}
                   </span>
                   <span
                     className={`ml-2 text-sm ${
-                      (stock.changePercent || stock.dp) >= 0
-                        ? "text-emerald-400"
-                        : "text-red-400"
+                      stock.dp >= 0 ? "text-emerald-400" : "text-red-400"
                     }`}
                   >
-                    {(stock.changePercent || stock.dp) >= 0 ? "+" : ""}
-                    {(stock.changePercent || stock.dp)?.toFixed(2)}%
+                    {stock.dp >= 0 ? "+" : ""}
+                    {stock.dp?.toFixed(2)}%
                   </span>
                 </div>
 
@@ -228,26 +279,22 @@ const StockDetails = ({ stocks = [], viewMode = "card", requestSort }) => {
                       <p className="text-xs text-gray-400">Change</p>
                       <p
                         className={`font-medium ${
-                          (stock.d || stock.change) >= 0
-                            ? "text-emerald-400"
-                            : "text-red-400"
+                          stock.d >= 0 ? "text-emerald-400" : "text-red-400"
                         }`}
                       >
-                        {(stock.d || stock.change) >= 0 ? "+" : ""}
-                        {(stock.d || stock.change)?.toFixed(2)}
+                        {stock.d >= 0 ? "+" : ""}
+                        {stock.d?.toFixed(2)}
                       </p>
                     </div>
                     <div>
                       <p className="text-xs text-gray-400">% Change</p>
                       <p
                         className={`font-medium ${
-                          (stock.dp || stock.changePercent) >= 0
-                            ? "text-emerald-400"
-                            : "text-red-400"
+                          stock.dp >= 0 ? "text-emerald-400" : "text-red-400"
                         }`}
                       >
-                        {(stock.dp || stock.changePercent) >= 0 ? "+" : ""}
-                        {(stock.dp || stock.changePercent)?.toFixed(2)}%
+                        {stock.dp >= 0 ? "+" : ""}
+                        {stock.dp?.toFixed(2)}%
                       </p>
                     </div>
                   </div>
@@ -312,7 +359,7 @@ const StockDetails = ({ stocks = [], viewMode = "card", requestSort }) => {
                   </tr>
                 </thead>
                 <tbody>
-                  {stocks.map((stock, index) => (
+                  {sortedStocks.map((stock, index) => (
                     <tr
                       key={index}
                       className="border-t border-gray-700 hover:bg-gray-700/50 transition-colors duration-200"
@@ -327,27 +374,23 @@ const StockDetails = ({ stocks = [], viewMode = "card", requestSort }) => {
                       </td>
                       <td className="py-4 px-4">{stock.companyName}</td>
                       <td className="py-4 px-4 font-bold">
-                        ${(stock.price || stock.c)?.toFixed(2)}
+                        ${stock.c?.toFixed(2)}
                       </td>
                       <td
                         className={`py-4 px-4 ${
-                          (stock.d || stock.change) >= 0
-                            ? "text-emerald-400"
-                            : "text-red-400"
+                          stock.d >= 0 ? "text-emerald-400" : "text-red-400"
                         }`}
                       >
-                        {(stock.d || stock.change) >= 0 ? "+" : ""}
-                        {(stock.d || stock.change)?.toFixed(2)}
+                        {stock.d >= 0 ? "+" : ""}
+                        {stock.d?.toFixed(2)}
                       </td>
                       <td
                         className={`py-4 px-4 ${
-                          (stock.dp || stock.changePercent) >= 0
-                            ? "text-emerald-400"
-                            : "text-red-400"
+                          stock.dp >= 0 ? "text-emerald-400" : "text-red-400"
                         }`}
                       >
-                        {(stock.dp || stock.changePercent) >= 0 ? "+" : ""}
-                        {(stock.dp || stock.changePercent)?.toFixed(2)}%
+                        {stock.dp >= 0 ? "+" : ""}
+                        {stock.dp?.toFixed(2)}%
                       </td>
                       <td className="py-4 px-4 text-emerald-400">
                         ${stock.h?.toFixed(2)}
@@ -381,6 +424,5 @@ const StockDetails = ({ stocks = [], viewMode = "card", requestSort }) => {
     </section>
   );
 };
-  };
 
 export default StockDetails;
