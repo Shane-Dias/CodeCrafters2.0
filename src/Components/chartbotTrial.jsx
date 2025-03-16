@@ -71,7 +71,7 @@ const Chatbot = () => {
 
       const data = await response.json();
       if (response.ok) {
-        const botMessage = `Saathi AI: ${data.bot_response}`;
+        const botMessage = `Lumina AI: ${data.bot_response}`;
         setChatHistory((prev) => [...prev, botMessage]);
       } else {
         console.error("Error:", data.error);
@@ -107,19 +107,20 @@ const Chatbot = () => {
         {/* Main Content */}
         <div className="relative z-10 w-full max-w-xl sm:max-w-2xl text-center">
           <h1 className="text-3xl sm:text-4xl font-extrabold bg-gradient-to-r from-blue-400 to-cyan-300 bg-clip-text text-transparent mb-4 drop-shadow-[0_0_10px_cyan]">
-            🔵 Saathi AI
+            🔵 Lumina AI
           </h1>
           <p className="text-lg bg-gradient-to-r from-blue-200 to-cyan-100 bg-clip-text text-transparent font-medium mb-4">
-            Get real-time guidance, emotional support, and safety tips. Ask
-            questions, seek help, or learn about your legal rights.
+            Get real-time guidance, suggestions, and investment tips. Ask
+            questions, seek help, or learn about your investment strategies.
           </p>
 
           <div className="relative w-full max-w-xl sm:max-w-2xl mt-4 p-4 rounded-xl bg-gradient-to-r from-blue-900/20 to-cyan-900/20 border border-blue-500/20 ">
             <p className="text-blue-200 text-sm">
-              ⚠️ <strong>Disclaimer:</strong> Saathi AI offers general legal and
-              safety information, but it is <strong>not</strong> a substitute
-              for professional legal counsel. Please consult a licensed attorney
-              for legal advice.
+              ⚠️ <strong>Disclaimer:</strong> Lumina AI provides general
+              investment insights and financial information, but it is not a
+              substitute for professional financial or investment advice. Please
+              consult a licensed financial advisor or investment professional
+              before making any financial decisions."
             </p>
           </div>
         </div>
@@ -128,7 +129,7 @@ const Chatbot = () => {
         <div className="relative z-10 w-full max-w-xl sm:max-w-2xl mt-6">
           <div className="w-full p-6 sm:p-8 rounded-3xl border border-blue-500/30 bg-gradient-to-b from-gray-900/90 to-black/90  shadow-[0_0_15px_rgba(0,255,255,0.1)] transition-all duration-300 hover:shadow-[0_0_25px_rgba(0,255,255,0.2)] hover:border-blue-400/40 ">
             <h2 className="text-2xl font-bold bg-gradient-to-r from-blue-400 to-cyan-300 bg-clip-text text-transparent text-center mb-6 ">
-              💬 Chat with Saathi AI
+              💬 Chat with Lumina AI
             </h2>
 
             {/* Chat Display */}
@@ -144,7 +145,7 @@ const Chatbot = () => {
                 chatHistory.map((message, index) => {
                   const formattedMessage = message
                     .replace("User:", "")
-                    .replace("Saathi AI:", "");
+                    .replace("Lumina  AI:", "");
                   const parts = formattedMessage
                     .split(/(\*\*.*?\*\*|\*.*?\*)/g)
                     .filter(Boolean);
@@ -158,7 +159,7 @@ const Chatbot = () => {
                           : "bg-gradient-to-r from-purple-500 to-blue-500 text-white mr-auto hover:shadow-[0_0_15px_rgba(147,51,234,0.15)]  animate-fadeIn"
                       }`}
                       style={{
-                        animationDelay: message.startsWith("Saathi AI:")
+                        animationDelay: message.startsWith("Lumina  AI:")
                           ? "300ms"
                           : "0ms",
                       }}
@@ -212,7 +213,7 @@ const Chatbot = () => {
                     </div>
                   </div>
                   <p className="text-blue-300/60 text-center animate-pulse">
-                    Saathi AI is thinking...
+                    Lumina AI is thinking...
                   </p>
                 </div>
               )}
