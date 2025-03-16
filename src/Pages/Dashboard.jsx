@@ -1,5 +1,4 @@
 import React, { useState, useEffect } from "react";
-import React from "react";
 import { Card, CardContent } from "../Components/Card";
 import { Button } from "../Components/Button";
 import { 
@@ -536,8 +535,7 @@ const Dashboard = () => {
           Sell Assets
         </Button>
       </div>
-    </div>
-  </div>
+    </div></>
   );
 };
 
