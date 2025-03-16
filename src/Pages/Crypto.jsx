@@ -116,8 +116,8 @@ const CryptoDashboard = () => {
           body: JSON.stringify({
             coin: coin.id,
             symbol: symbol,
-            quantity: amount,
-            coin_amount: coinAmount,
+            quantity: amount / coinAmount,
+            price: coinAmount,
           }),
         }
       );
