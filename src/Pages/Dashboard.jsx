@@ -1,5 +1,6 @@
 import React from "react";
 import { Card, CardContent } from "../Components/Card";
+import { useState, useEffect } from "react";
 import { Button } from "../Components/Button";
 import {
   Wallet,
@@ -30,9 +31,8 @@ import {
   Area,
 } from "recharts";
 
-const [userData, setUserData] = useState({});
-
 const InvestmentDashboard = () => {
+  const [userData, setUserData] = useState({});
   // Sample data for charts
   const performanceData = [
     { name: "Jan", profit: 2500 },
@@ -172,7 +172,16 @@ const InvestmentDashboard = () => {
             },
             {
               title: "Investments",
-              amount: userData.total_investments,
+              amount: userData.total_investment
+                ? parseFloat(userData.total_investment).toLocaleString(
+                    "en-US",
+                    {
+                      style: "decimal",
+                      minimumFractionDigits: 2,
+                      maximumFractionDigits: 2,
+                    }
+                  )
+                : "0.00",
               icon: TrendingUp,
               glow: "shadow-lg shadow-cyan-500/50",
               color: "bg-gray-800",
@@ -181,7 +190,13 @@ const InvestmentDashboard = () => {
             },
             {
               title: "Profits",
-              amount: userData.total_profits,
+              amount: userData.total_profit
+                ? parseFloat(userData.total_profit).toLocaleString("en-US", {
+                    style: "decimal",
+                    minimumFractionDigits: 2,
+                    maximumFractionDigits: 2,
+                  })
+                : "0.00",
               icon: BarChart2,
               glow: "shadow-lg shadow-emerald-500/50",
               color: "bg-gray-800",
