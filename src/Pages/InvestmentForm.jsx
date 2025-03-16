@@ -8,6 +8,7 @@ import {
   ArrowLeft,
   CreditCard,
   Bookmark,
+  RefreshCw,
 } from "lucide-react";
 
 const InvestmentForm = () => {
@@ -339,7 +340,7 @@ const InvestmentForm = () => {
               </div>
 
               {/* Results Panel */}
-              {portfolioData && (
+              {portfolioData ? (
                 <div
                   className="p-6 rounded-2xl mb-6"
                   style={{
@@ -432,6 +433,10 @@ const InvestmentForm = () => {
                       ${portfolioData.leftover}
                     </div>
                   </div>
+                </div>
+              ) : (
+                <div className="text-center text-gray-400">
+                  No portfolio data available.
                 </div>
               )}
 
