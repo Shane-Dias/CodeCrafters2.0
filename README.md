@@ -11,6 +11,8 @@ The Investment Portal is a comprehensive financial management platform that allo
 - Quick-action buttons for trades and transfers.
 - Recent transaction logs and personalized market alerts.
 
+  ![Alt Text](public/dashboard.png)
+
 ### **CryptoWealth**
 - Real-time cryptocurrency values and performance tracking.
 - Market trend analysis with direct trade execution.
