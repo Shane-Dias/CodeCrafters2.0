@@ -22,6 +22,7 @@ import { X } from "lucide-react";
 
 const CryptoDashboard = () => {
   const [cryptoData, setCryptoData] = useState([]);
+  const [userData, setUserData] = useState([]);
   const [isLoading, setIsLoading] = useState(true);
   const [selectedCrypto, setSelectedCrypto] = useState("bitcoin");
   const [purchaseAmount, setPurchaseAmount] = useState("");
@@ -48,10 +49,38 @@ const CryptoDashboard = () => {
       setIsLoading(false);
     };
 
+    const fetchuserdata = async () => {
+      try {
+        const response = await fetch(
+          "http://127.0.0.1:8000/api/accounts/get_user/",
+          {
+            method: "GET",
+            headers: {
+              "Content-Type": "application/json",
+              Authorization: `Bearer ${sessionStorage.getItem("access_token")}`,
+            },
+          }
+        );
+        if (response.ok) {
+          const data = await response.json();
+          console.log(data);
+          setUserData(data);
+        }
+      } catch (error) {
+        console.error("Error:", error);
+      }
+    };
+
+    // Call both functions
     fetchData();
+    fetchuserdata();
+
+    // Set up interval for fetching data
     const interval = setInterval(fetchData, 300000);
+
+    // Cleanup interval on unmount
     return () => clearInterval(interval);
-  }, []);
+  }, []); // Empty dependency array ensures this runs only once on mount
 
   const getChartData = () => {
     const coin = cryptoData.find((c) => c.id === selectedCrypto);
@@ -256,9 +285,7 @@ const CryptoDashboard = () => {
             {[
               {
                 title: "Portfolio Value",
-                amount: `$${cryptoData
-                  .reduce((sum, coin) => sum + (coin.current_price || 0), 0)
-                  .toLocaleString()}`,
+                amount: `$${userData.wallet || 0}`,
                 icon: Wallet,
                 glow: "shadow-lg",
                 color: "bg-gray-800",

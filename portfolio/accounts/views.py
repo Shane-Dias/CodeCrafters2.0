@@ -377,3 +377,19 @@ def confirm_sell_stock(request):
     }, status=status.HTTP_200_OK)
 
 
+@api_view(['GET'])
+def get_user(request):
+    """Get user details"""
+    auth_header = request.META.get('HTTP_AUTHORIZATION')
+    if auth_header and auth_header.startswith('Bearer '):
+        try:
+            token_str = auth_header.split(' ')[1]
+            token = AccessToken(token_str)
+            user = CustomUser.objects.get(id=token['user_id'])
+        except Exception:
+            return Response({"error": "Invalid or expired token"}, status=status.HTTP_401_UNAUTHORIZED)
+    else:
+        return Response({"error": "No Authorization token"}, status=status.HTTP_401_UNAUTHORIZED)
+    
+    serializer = UserSerializer(user)
+    return Response(serializer.data, status=status.HTTP_200_OK)
