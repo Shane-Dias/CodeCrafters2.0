@@ -28,6 +28,7 @@ const Navbar = () => {
     "Trade",
     "Market",
     "InvestHub",
+    "Login",
   ];
 
   return (

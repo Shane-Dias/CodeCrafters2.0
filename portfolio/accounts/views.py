@@ -145,9 +145,7 @@ def request_buy_stock(request):
 
     # Get current stock price (replace with your actual price retrieval logic)
     try:
-        stock_price_series = get_stock_data(request, ticker=symbol)
-        # Convert the pandas Series to a float
-        stock_price = float(stock_price_series.iloc[0]) if not stock_price_series.empty else 0
+        stock_price = request.data.get('price')
     except Exception as e:
         return Response({"error": f"Could not get price for {symbol}: {str(e)}"}, status=status.HTTP_400_BAD_REQUEST)
 
