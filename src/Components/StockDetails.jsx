@@ -9,6 +9,7 @@ const COMPANY_NAMES = {
   MSFT: "Microsoft Corporation",
   AMZN: "Amazon.com Inc.",
   TSLA: "Tesla Inc.",
+  META: "Meta Platforms Inc.",
 };
 
 // Icons for companies (upgraded with glowing effect)
@@ -38,6 +39,8 @@ const StockIcon = ({ symbol }) => {
 };
 
 const StockDetails = () => {
+  const [isLoading2, setIsLoading2] = useState(false);
+  const [showOtpModal, setShowOtpModal] = useState(false);
   const [stocks, setStocks] = useState([]);
   const [loading, setLoading] = useState(true);
   const [error, setError] = useState(null);
@@ -47,7 +50,8 @@ const StockDetails = () => {
   });
   const [viewMode, setViewMode] = useState("card"); // 'card' or 'table'
 
-  const SYMBOLS = ["AAPL", "GOOGL", "MSFT", "AMZN", "TSLA"]; // Example stock symbols
+  const SYMBOLS = ["AAPL", "GOOGL", "MSFT", "AMZN", "TSLA", "META"];
+  // Example stock symbols
 
   useEffect(() => {
     const fetchStockData = async () => {
@@ -61,6 +65,7 @@ const StockDetails = () => {
               throw new Error(`Failed to fetch data for ${symbol}`);
             }
             const data = await response.json();
+            console.log(data);
             return {
               symbol,
               companyName: COMPANY_NAMES[symbol] || symbol,
@@ -77,7 +82,7 @@ const StockDetails = () => {
     };
 
     fetchStockData();
-  }, [SYMBOLS, API_KEY]);
+  }, []);
 
   // Sorting logic
   const requestSort = (key) => {
@@ -110,38 +115,161 @@ const StockDetails = () => {
     return sortableStocks;
   };
 
-  // Handle buying stocks
-  const handleBuy = async (stock) => {
-    const accessToken = sessionStorage.getItem("access_token");
-    if (!accessToken) {
-      alert("You must be logged in to buy stocks.");
+  const handlePurchase = async (stock) => {
+    console.log(stock.c,stock.symbol);
+    setIsLoading2(true);
+    try {
+      const response = await fetch(
+        "http://127.0.0.1:8000/api/accounts/request-buy/",
+        {
+          method: "POST",
+          headers: {
+            "Content-Type": "application/json",
+            Authorization: `Bearer ${sessionStorage.getItem("access_token")}`,
+          },
+          body: JSON.stringify({
+            coin: 1,
+            symbol: stock.symbol,
+            quantity: 1,
+            price:stock.c ,
+          }),
+        }
+      );
+
+      if (response.ok) {
+        const data = await response.json();
+        // Store transaction data for OTP verification
+        setTransactionData({
+          coin: coin.id,
+          amount: amount,
+          coinAmount: coinAmount,
+          transactionId: data.transaction_key, // If your API returns this
+        });
+        setIsLoading2(false);
+        // Show OTP modal only if request was successful
+        setShowOtpModal(true);
+      } else {
+        const errorData = await response.json();
+        setIsLoading2(false);
+        alert(errorData.error || "Purchase request failed");
+      }
+    } catch (error) {
+      console.error("Error:", error);
+      setIsLoading2(false);
+      alert("Purchase request failed. Please try again.");
+    }
+  };
+
+  const verifyOtp = async () => {
+    if (!otp) {
+      setOtpError("Please enter OTP");
       return;
     }
 
     try {
-      const response = await fetch("http://127.0.0.1:8000/api/accounts/buy/", {
-        method: "POST",
-        headers: {
-          "Content-Type": "application/json",
-          Authorization: `Bearer ${accessToken}`,
-        },
-        body: JSON.stringify({
-          symbol: stock.symbol,
-          company_name: stock.companyName,
-          price: stock.c,
-          quantity: 1,
-        }),
-      });
+      const response = await fetch(
+        "http://127.0.0.1:8000/api/accounts/confirm-buy/",
+        {
+          method: "POST",
+          headers: {
+            "Content-Type": "application/json",
+            Authorization: `Bearer ${sessionStorage.getItem("access_token")}`,
+          },
+          body: JSON.stringify({
+            transaction_key: transactionData?.transactionId,
+            otp: otp,
+          }),
+        }
+      );
 
-      if (!response.ok) {
+      if (response.ok) {
+        setShowOtpModal(false);
+        setOtp("");
+        setPurchaseAmount("");
+        navigate("/success");
+      } else {
         const errorData = await response.json();
-        throw new Error(errorData.message || "Failed to purchase stock.");
+        setOtpError(errorData.error || "Verification failed");
       }
-
-      alert("Stock purchased successfully!");
-    } catch (err) {
-      alert(`Error: ${err.message}`);
+    } catch (error) {
+      console.error("Error:", error);
+      setOtpError("Verification failed");
     }
+  };
+
+  // Add this OTP Modal component within your return statement
+  const OtpModal = () => {
+    if (!showOtpModal) return null;
+
+    return (
+      <div className="fixed inset-0 flex items-center justify-center z-50 bg-black bg-opacity-50">
+        <div className="bg-gray-800 rounded-xl p-6 w-full max-w-md border-2 border-indigo-500/50">
+          <div className="flex justify-between items-center mb-4">
+            <h3 className="text-xl font-bold text-gray-100">Verify Purchase</h3>
+            <button
+              onClick={() => setShowOtpModal(false)}
+              className="text-gray-400 hover:text-gray-200"
+            >
+              <X size={20} />
+            </button>
+          </div>
+
+          <p className="text-gray-300 mb-4">
+            Enter the OTP sent to your registered mobile number to complete your
+            purchase.
+          </p>
+
+          <div className="space-y-4">
+            <div>
+              <label className="block text-sm font-medium text-gray-300 mb-2">
+                Transaction Details
+              </label>
+              <div className="bg-gray-700 rounded p-3 text-sm">
+                <p className="text-gray-300">
+                  <span className="font-medium">Coin:</span>{" "}
+                  {cryptoData.find((c) => c.id === selectedCrypto)?.name}
+                </p>
+                <p className="text-gray-300">
+                  <span className="font-medium">Amount:</span> $
+                  {parseFloat(purchaseAmount).toFixed(2)}
+                </p>
+                <p className="text-gray-300">
+                  <span className="font-medium">Quantity:</span>{" "}
+                  {(
+                    parseFloat(purchaseAmount) /
+                    (cryptoData.find((c) => c.id === selectedCrypto)
+                      ?.current_price || 1)
+                  ).toFixed(6)}
+                </p>
+              </div>
+            </div>
+
+            <div>
+              <label className="block text-sm font-medium text-gray-300 mb-2">
+                One-Time Password (OTP)
+              </label>
+              <input
+                type="text"
+                value={otp}
+                onChange={(e) => setOtp(e.target.value)}
+                className="w-full p-2 rounded bg-gray-700 border border-gray-600 text-gray-100 focus:outline-none focus:ring-2 focus:ring-indigo-500"
+                placeholder="Enter OTP"
+              />
+              {otpError && (
+                <p className="mt-1 text-sm text-red-400">{otpError}</p>
+              )}
+            </div>
+
+            <button
+              onClick={verifyOtp}
+              className="w-full bg-indigo-600 hover:bg-indigo-700 text-white py-2 px-4 rounded shadow-lg shadow-indigo-500/50 hover:shadow-indigo-500/70 transition-all"
+            >
+              Confirm Purchase
+            </button>
+          </div>
+        </div>
+      </div>
+    );
   };
 
   // Initialize watchlist state from localStorage
@@ -302,11 +430,12 @@ const StockDetails = () => {
 
                 <div className="mt-4 flex justify-between">
                   <button
-                    onClick={() => handleBuy(stock)}
+                    onClick={() => handlePurchase(stock)}
                     className="py-2 px-4 rounded-lg bg-gray-700 text-cyan-400 text-sm font-medium shadow-[3px_3px_6px_rgba(0,0,0,0.25),-3px_-3px_6px_rgba(70,70,70,0.08)] hover:shadow-[inset_3px_3px_6px_rgba(0,0,0,0.25),inset_-3px_-3px_6px_rgba(70,70,70,0.08)] transition-all duration-300 border border-cyan-900/30 hover:drop-shadow-[0_0_5px_rgba(34,211,238,0.5)] center"
                   >
                     Buy
                   </button>
+                  {isLoading2 && <div class="loader"></div>}
                 </div>
               </div>
             ))}
@@ -421,6 +550,7 @@ const StockDetails = () => {
           </div>
         )}
       </div>
+      <OtpModal />
     </section>
   );
 };

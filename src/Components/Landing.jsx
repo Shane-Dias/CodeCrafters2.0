@@ -196,9 +196,11 @@ const InvestmentLandingPage = () => {
               "buttons"
             )}`}
           >
-            <button className="px-6 py-3 rounded-lg bg-blue-500 hover:bg-blue-600 text-white font-medium transition-colors">
-              Get Started
-            </button>
+            <a href="/login">
+              <button className="px-6 py-3 rounded-lg bg-blue-500 hover:bg-blue-600 text-white font-medium transition-colors">
+                Get Started
+              </button>
+            </a>
             <button className="px-6 py-3 rounded-lg bg-transparent border border-white/20 hover:bg-white/5 text-white/80 font-medium transition-colors">
               Learn More
             </button>
