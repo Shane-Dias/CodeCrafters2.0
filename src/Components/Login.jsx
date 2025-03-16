@@ -120,7 +120,10 @@ const Login = () => {
           {/* Form */}
           <div className="p-6">
             {formSuccess ? (
-              <div className="bg-gray-800 border border-cyan-700 text-cyan-400 rounded-xl p-6 mb-6 text-center shadow-[5px_5px_10px_rgba(0,0,0,0.3),-5px_-5px_10px_rgba(70,70,70,0.1)]">
+              <div
+                className="bg-gray-800 border border-cyan-700 text-cyan-400 rounded-xl p-6 mb-6 text-center shadow-[5px_5px_10px_rgba(0,0,0,0.3),-5px_-5px_10px_rgba(70,70,70,0.1)]"
+                style={{ width: "32rem" }}
+              >
                 <svg
                   className="w-12 h-12 text-cyan-400 mx-auto mb-4 drop-shadow-[0_0_8px_rgba(34,211,238,0.6)]"
                   fill="none"
@@ -240,7 +243,7 @@ const Login = () => {
                 <div className="text-center mt-6 text-gray-300 text-sm">
                   Don't have an account yet?{" "}
                   <a
-                    href="#"
+                    href="/register"
                     className="text-cyan-400 hover:text-cyan-300 font-medium drop-shadow-[0_0_5px_rgba(34,211,238,0.4)] transition-all duration-300"
                   >
                     Sign Up

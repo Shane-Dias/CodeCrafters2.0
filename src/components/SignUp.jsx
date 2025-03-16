@@ -115,7 +115,10 @@ const SignUp = () => {
       <div className="absolute w-24 h-24 bottom-1/3 right-1/3 rounded-full bg-cyan-900 blur-3xl opacity-15"></div>
 
       <div className="w-full max-w-md relative z-10">
-        <div className="bg-gray-800 rounded-2xl shadow-[10px_10px_20px_rgba(0,0,0,0.4),-10px_-10px_20px_rgba(70,70,70,0.1)] border border-cyan-900/30 overflow-hidden">
+        <div
+          className="bg-gray-800 mt-20  rounded-2xl shadow-[10px_10px_20px_rgba(0,0,0,0.4),-10px_-10px_20px_rgba(70,70,70,0.1)] border border-cyan-900/30 overflow-hidden"
+          style={{ width: "32rem" }}
+        >
           {/* Header */}
           <div className="p-6 text-center">
             <h2 className="text-3xl font-bold text-cyan-400 drop-shadow-[0_0_10px_rgba(34,211,238,0.7)]">
@@ -268,7 +271,7 @@ const SignUp = () => {
                 <div className="text-center mt-6 text-gray-300 text-sm">
                   Already have an account?{" "}
                   <a
-                    href="#"
+                    href="/login"
                     className="text-cyan-400 hover:text-cyan-300 font-medium drop-shadow-[0_0_5px_rgba(34,211,238,0.4)] transition-all duration-300"
                   >
                     Sign In
