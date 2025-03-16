@@ -16,6 +16,7 @@ import News from "./Components/News";
 import StockComparison from "./Components/StockComparison";
 
 import Chatbot from "./Components/chartbotTrial";
+import ChatbotWidget from "./Components/Chatbot_Widget";
 
 import Navbar from "./Components/Navbar";
 import Dashboard from "./Pages/Dashboard";
@@ -32,6 +33,7 @@ function App() {
   return (
     <BrowserRouter>
       <Navbar />
+      <ChatbotWidget />
       <Routes>
         <Route path="/" element={<Home />} />
         {/* <Route path="/about" element={<About />} /> */}
