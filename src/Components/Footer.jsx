@@ -77,7 +77,7 @@ const Footer = () => {
             <div className="mb-3">
               <div className="text-xl font-bold bg-gradient-to-r from-gray-800 to-gray-900 py-1.5 px-3 rounded-lg shadow-[3px_3px_10px_rgba(0,0,0,0.4),-3px_-3px_10px_rgba(70,70,70,0.1)] border-t border-l border-gray-700 inline-block">
                 <span className="text-transparent bg-clip-text bg-gradient-to-r from-cyan-400 to-blue-500 drop-shadow-[0_0_6px_rgba(34,211,238,0.6)]">
-                  InvestPortal
+                   WealthGrow
                 </span>
               </div>
             </div>
@@ -124,7 +124,7 @@ const Footer = () => {
           <div className="flex flex-col sm:flex-row justify-between items-center">
             <div className="mb-4 sm:mb-0">
               <h3 className="text-sm font-semibold mb-1">Stay updated</h3>
-              <p className="text-gray-400 text-xs">Get the latest news from InvestPortal</p>
+              <p className="text-gray-400 text-xs">Get the latest news from WealthGrow</p>
             </div>
             <div className="flex w-full sm:w-auto">
               <input 
@@ -142,7 +142,7 @@ const Footer = () => {
         {/* Copyright - More compact */}
         <div className="mt-6 pt-4 border-t border-gray-800 flex flex-col sm:flex-row justify-between items-center">
           <p className="text-gray-400 text-xs mb-3 sm:mb-0">
-            &copy; {currentYear} InvestPortal. All rights reserved.
+            &copy; {currentYear} WealthGrow. All rights reserved.
           </p>
           <div className="flex space-x-4">
             <a href="/privacy" className="text-gray-400 hover:text-cyan-400 transition-colors duration-300 text-xs">

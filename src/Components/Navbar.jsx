@@ -33,7 +33,7 @@ const Navbar = () => {
           <div className="text-2xl font-bold bg-gradient-to-r from-gray-800 to-gray-900 py-2 px-4 rounded-xl shadow-[5px_5px_15px_rgba(0,0,0,0.4),-5px_-5px_15px_rgba(70,70,70,0.1)] border-t border-l border-gray-700">
             <a href="/">
               <span className="text-transparent bg-clip-text bg-gradient-to-r from-cyan-400 to-blue-500 drop-shadow-[0_0_8px_rgba(34,211,238,0.6)]">
-                InvestPortal
+                WealthGrow
               </span>
             </a>
           </div>

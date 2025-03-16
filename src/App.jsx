@@ -25,6 +25,7 @@ import Trade from "./Pages/Trade";
 import StockChart from "./Components/StockChart";
 import Exchange from "./Pages/Exchange";
 import Transaction from "./Pages/Transaction";
+import Footer from "./Components/Footer";
 
 function App() {
   return (
@@ -40,8 +41,6 @@ function App() {
         <Route path="/view/:id" element={<View />} />
         <Route path="/crypto" element={<Crypto />} />
         <Route path="/trade" element={<Trade />} />
-        
-        
         <Route path="/register" element={<SignUp />} />
         <Route path="/login" element={<Login />} />
         <Route path="/dashboard" element={<Dashboard />} />
@@ -53,6 +52,7 @@ function App() {
         <Route path="/transaction" element={<Transaction />} />
         <Route path="/investmentsuggestions" element={<InvestmentForm />} />
       </Routes>
+      <Footer />
     </BrowserRouter>
   );
 }

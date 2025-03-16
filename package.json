@@ -12,6 +12,8 @@
   "dependencies": {
     "@next/font": "^14.2.15",
     "@shadcn/ui": "^0.0.4",
+    "@tsparticles/react": "^3.0.0",
+    "@tsparticles/slim": "^3.8.1",
     "animated-backgrounds": "^1.1.0",
     "clsx": "^2.1.1",
     "framer-motion": "^12.5.0",
