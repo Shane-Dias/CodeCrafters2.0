@@ -176,7 +176,7 @@ const CryptoDashboard = () => {
                 </ResponsiveContainer>
               </div>
               
-              <div className="mt-6">
+              <div className="mt-6 mr-8">
                 <div className="space-y-2">
                   <label className="block text-sm font-medium text-gray-300">Buy Amount (USD)</label>
                   <div className="flex items-center">
