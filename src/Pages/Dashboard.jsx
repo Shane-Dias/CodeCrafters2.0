@@ -1,32 +1,3 @@
-<<<<<<< Updated upstream
-import React from "react";
-import { Wallet, TrendingUp, BarChart2, Shield, PieChart, Home, FileText, Activity, Settings } from "lucide-react";
-import { ResponsiveContainer, LineChart, CartesianGrid, XAxis, YAxis, Tooltip, Line } from "recharts";
-import { Card, CardContent } from "../Components/Card";
-import { Button } from "../Components/Button";
-import Navbar from "../Components/Navbar";
-
-const data = [
-  { name: "Jan", profit: 4000 },
-  { name: "Feb", profit: 3000 },
-  { name: "Mar", profit: 5000 },
-  { name: "Apr", profit: 7000 },
-  { name: "May", profit: 6000 },
-];
-
-const Sidebar = () => {
-  return (
-    <div className="bg-[#0a192f] w-64 min-h-screen p-6 flex flex-col shadow-lg border-r border-cyan-400">
-      <h2 className="text-3xl font-bold text-cyan-400 mb-6 text-center">Investment Hub</h2>
-      <nav className="space-y-4">
-        {[{ name: "Dashboard", icon: Home }, { name: "Portfolio", icon: Wallet }, { name: "Transactions", icon: FileText }, { name: "Insights", icon: Activity }, { name: "Settings", icon: Settings }].map((item, index) => (
-          <div key={index} className="flex items-center space-x-3 p-3 text-white hover:bg-cyan-400 hover:text-[#0a192f] rounded-lg cursor-pointer transition-all">
-            <item.icon size={24} />
-            <span className="text-lg font-medium">{item.name}</span>
-          </div>
-        ))}
-      </nav>
-=======
 import React, { useState, useEffect } from "react";
 import { Card, CardContent } from "../Components/Card";
 import { Button } from "../Components/Button";
@@ -368,7 +339,6 @@ const InvestmentDashboard = () => {
           <p className="mt-1">Investment data is simulated for demonstration purposes.</p>
         </div>
       </div>
->>>>>>> Stashed changes
     </div>
   );
 };
