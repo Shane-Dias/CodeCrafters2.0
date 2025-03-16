@@ -10,8 +10,11 @@
     "preview": "vite preview"
   },
   "dependencies": {
+    "@next/font": "^14.2.15",
     "@shadcn/ui": "^0.0.4",
     "animated-backgrounds": "^1.1.0",
+    "clsx": "^2.1.1",
+    "framer-motion": "^12.5.0",
     "html2canvas": "^1.4.1",
     "jspdf": "^3.0.0",
     "lucide-react": "^0.482.0",
