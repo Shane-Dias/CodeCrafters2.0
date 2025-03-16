@@ -19,7 +19,7 @@ The Investment Portal is a comprehensive financial management platform that allo
 - Secure transactions with **2-step OTP verification**.
 - Automated price alerts and complete transaction history.
 
-  ![Alt Text](assets/crypto.png)
+  ![Alt Text](public/crypto.png)
 
 ### **Dynamic Real-Time Market Data**
 - Live updates on **cryptocurrencies, bonds, and commodities**.
@@ -28,7 +28,7 @@ The Investment Portal is a comprehensive financial management platform that allo
 - Streamlined buy/sell panels for quick trade execution.
 - **Visual indicators** highlighting price movements and trends.
 
-![Alt Text](assets/TradingGraphs.png)
+![Alt Text](public/TradingGraphs.png)
 
 ### **Stock Market Monitoring**
 - Dual monitoring of **NSE and BSE market data**.
@@ -38,7 +38,7 @@ The Investment Portal is a comprehensive financial management platform that allo
 - **Arbitrage opportunity table** displaying price differentials.
 - Automatic data refresh with manual update options.
 
-  ![Alt Text](assets/NSEvsBSE.png)
+  ![Alt Text](public/NSEvsBSE.png)
 
 ### **Investment Exploration Tools**
 - Search, filter, and sort investments by asset type, price, and performance.
@@ -46,7 +46,7 @@ The Investment Portal is a comprehensive financial management platform that allo
 - Toggleable **card and table views** for flexible data visualization.
 - **Gradient design** for enhanced user experience and emphasis on key metrics.
 
-  ![Alt Text](assets/market.jpeg)
+  ![Alt Text](public/market.jpeg)
 
 ### **Financial Guidance and Insights**
 - Personalized stock and market insights tailored to user goals and risk tolerance.
@@ -63,7 +63,7 @@ The Investment Portal is a comprehensive financial management platform that allo
 - Quick navigation to **detailed investor profiles**.
 - Visual system for categorizing investors based on **risk level and performance**.
 
-- ![Alt Text](assets/InvestHub.jpeg)
+- ![Alt Text](public/InvestHub.jpeg)
 
 ## Tech Stack
 - **Backend:** Django (REST Framework) / Node.js (Express)
