@@ -19,12 +19,16 @@ The Investment Portal is a comprehensive financial management platform that allo
 - Secure transactions with **2-step OTP verification**.
 - Automated price alerts and complete transaction history.
 
+  ![Alt Text](assets/crypto.png)
+
 ### **Dynamic Real-Time Market Data**
 - Live updates on **cryptocurrencies, bonds, and commodities**.
 - Easy switching between asset categories and investment searches.
 - Interactive price charts for historical performance analysis.
 - Streamlined buy/sell panels for quick trade execution.
 - **Visual indicators** highlighting price movements and trends.
+
+![Alt Text](assets/TradingGraphs.png)
 
 ### **Stock Market Monitoring**
 - Dual monitoring of **NSE and BSE market data**.
@@ -34,11 +38,15 @@ The Investment Portal is a comprehensive financial management platform that allo
 - **Arbitrage opportunity table** displaying price differentials.
 - Automatic data refresh with manual update options.
 
+  ![Alt Text](assets/NSEvsBSE.png)
+
 ### **Investment Exploration Tools**
 - Search, filter, and sort investments by asset type, price, and performance.
 - Personalized watchlist for tracking potential investments.
 - Toggleable **card and table views** for flexible data visualization.
 - **Gradient design** for enhanced user experience and emphasis on key metrics.
+
+  ![Alt Text](assets/market.jpeg)
 
 ### **Financial Guidance and Insights**
 - Personalized stock and market insights tailored to user goals and risk tolerance.
@@ -46,12 +54,16 @@ The Investment Portal is a comprehensive financial management platform that allo
 - Investment decision support for both novice and experienced users.
 - Market volatility management with balanced perspectives.
 
+  
+
 ### **Social Investing & Copy Trading**
 - Showcases a **curated selection of top investors** on the platform.
 - Displays investor performance metrics, risk classifications, and portfolio highlights.
 - Enables users to **follow and copy trades** from selected investors.
 - Quick navigation to **detailed investor profiles**.
 - Visual system for categorizing investors based on **risk level and performance**.
+
+- ![Alt Text](assets/InvestHub.jpeg)
 
 ## Tech Stack
 - **Backend:** Django (REST Framework) / Node.js (Express)
