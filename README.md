@@ -63,7 +63,7 @@ The Investment Portal is a comprehensive financial management platform that allo
 - Quick navigation to **detailed investor profiles**.
 - Visual system for categorizing investors based on **risk level and performance**.
 
-- ![Alt Text](public/InvestHub.jpeg)
+- ![Alt Text](public/InvestHub.jpg)
 
 ## Tech Stack
 - **Backend:** Django (REST Framework) / Node.js (Express)
