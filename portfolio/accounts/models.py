@@ -24,6 +24,8 @@ class CustomUser(AbstractBaseUser, PermissionsMixin):
     address = models.TextField()
     wallet = models.IntegerField(default=0, null=True, blank=True)
     bank_account = models.CharField(max_length=50)
+    total_profit = models.FloatField(default = 0)
+    total_investments = models.FloatField(default = 0)
 
     is_active = models.BooleanField(default=True)
     is_staff = models.BooleanField(default=False)
