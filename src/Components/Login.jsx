@@ -80,7 +80,7 @@ const Login = () => {
       const data = await response.json();
 
       if (response.ok) {
-        sessionStorage.setItem("access_token", data.access);
+        sessionStorage.setItem("access_token", data.tokens.access);
         setFormSuccess(true);
         console.log("User Data:", data.user);
       } else {
