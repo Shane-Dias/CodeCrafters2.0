@@ -362,7 +362,7 @@ const InvestmentForm = () => {
                         WebkitTextFillColor: "transparent",
                       }}
                     >
-                      {portfolioData.expected_return}%
+                      {portfolioData.expected_return.toFixed(2)}%
                     </div>
                   </div>
 
@@ -373,7 +373,7 @@ const InvestmentForm = () => {
                         Annual Volatility
                       </div>
                       <div className="text-lg font-semibold text-gray-200">
-                        {portfolioData.volatility}%
+                        {portfolioData.volatility.toFixed(2)}%
                       </div>
                     </div>
 
@@ -382,7 +382,7 @@ const InvestmentForm = () => {
                         Sharpe Ratio
                       </div>
                       <div className="text-lg font-semibold text-gray-200">
-                        {portfolioData.sharpe}
+                        {portfolioData.sharpe.toFixed(2)}
                       </div>
                     </div>
                   </div>
@@ -393,35 +393,37 @@ const InvestmentForm = () => {
                       Dynamic Allocation
                     </div>
 
-                    {portfolioData.allocation.map((stock, index) => (
-                      <div key={index} className="mb-2">
-                        <div className="flex justify-between text-sm mb-1">
-                          <span className="font-medium text-gray-300">
-                            {stock.ticker}
-                          </span>
-                          <span className="font-medium text-gray-300">
-                            {stock.percentage}%
-                          </span>
-                        </div>
-                        <div
-                          className="w-full h-2 rounded-full overflow-hidden"
-                          style={{
-                            backgroundColor: "#1a1a2e",
-                            boxShadow:
-                              "inset 2px 2px 5px rgba(0, 0, 0, 0.3), inset -1px -1px 3px rgba(59, 59, 90, 0.2)",
-                          }}
-                        >
+                    {Object.entries(portfolioData.allocation).map(
+                      ([ticker, percentage], index) => (
+                        <div key={index} className="mb-2">
+                          <div className="flex justify-between text-sm mb-1">
+                            <span className="font-medium text-gray-300">
+                              {ticker}
+                            </span>
+                            <span className="font-medium text-gray-300">
+                              {percentage}%
+                            </span>
+                          </div>
                           <div
-                            className="h-full rounded-full"
+                            className="w-full h-2 rounded-full overflow-hidden"
                             style={{
-                              width: `${stock.percentage}%`,
-                              background:
-                                "linear-gradient(90deg, #06b6d4, #b388ff)",
+                              backgroundColor: "#1a1a2e",
+                              boxShadow:
+                                "inset 2px 2px 5px rgba(0, 0, 0, 0.3), inset -1px -1px 3px rgba(59, 59, 90, 0.2)",
                             }}
-                          ></div>
+                          >
+                            <div
+                              className="h-full rounded-full"
+                              style={{
+                                width: `${percentage}%`,
+                                background:
+                                  "linear-gradient(90deg, #06b6d4, #b388ff)",
+                              }}
+                            ></div>
+                          </div>
                         </div>
-                      </div>
-                    ))}
+                      )
+                    )}
                   </div>
 
                   {/* Funds Remaining */}
@@ -430,7 +432,7 @@ const InvestmentForm = () => {
                       Funds Remaining
                     </div>
                     <div className="text-lg font-bold text-green-400">
-                      ${portfolioData.leftover}
+                      ${portfolioData.leftover.toFixed(2)}
                     </div>
                   </div>
                 </div>

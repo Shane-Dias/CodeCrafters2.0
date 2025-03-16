@@ -19,17 +19,10 @@ const AssetsMarketplace = () => {
   const [viewMode, setViewMode] = useState("card"); // Added from StockDetails
 
   // Mock API Key - In production, use environment variables
-  const API_KEY = import.meta.env.VITE_FINNHUB_API_KEY || "demo_key";
+  const API_KEY = import.meta.env.VITE_FINNHUB_API_KEY;
 
   // Stock symbols to fetch (moved from StockDetails)
-  const SYMBOLS = [
-    "AAPL",
-    "GOOGL",
-    "MSFT",
-    "AMZN",
-    "TSLA",
-    "META",
-  ];
+  const SYMBOLS = ["AAPL", "GOOGL", "MSFT", "AMZN", "TSLA", "META"];
 
   // Company name mapping (moved from StockDetails)
   const COMPANY_NAMES = {
@@ -44,6 +37,7 @@ const AssetsMarketplace = () => {
   // Fetch stock data (initial load)
   useEffect(() => {
     const fetchStockData = async () => {
+      console.log(API_KEY);
       try {
         const stockData = await Promise.all(
           SYMBOLS.map(async (symbol) => {

@@ -29,6 +29,8 @@ def stock_optimization(tickers, total_portfolio_value, risk, target_volatility=0
 
     da = DiscreteAllocation(cleaned_weights, latest_prices, total_portfolio_value=total_portfolio_value)
     allocation, leftover = da.lp_portfolio()
+    print(allocation)
+    print(leftover)
 
     return expected_return, volatility, sharpe, cleaned_weights, allocation, leftover
 

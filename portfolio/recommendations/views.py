@@ -34,6 +34,7 @@ def recommend_portfolio(request):
                 corrected_tickers.append(ticker + ".BO")  # BSE Suffix
             else:
                 corrected_tickers.append(ticker)  # If unknown, keep as is
+            print(ticker)
         except Exception as e:
             return Response({'error': f"Failed to fetch exchange for {ticker}: {str(e)}"}, status=400)
 
