@@ -1,6 +1,7 @@
 "use client";
 
 import { useState, useEffect } from "react";
+import { useNavigate } from "react-router-dom";
 
 const Login = () => {
   const [formData, setFormData] = useState({
@@ -11,6 +12,7 @@ const Login = () => {
   const [isSubmitting, setIsSubmitting] = useState(false);
   const [formError, setFormError] = useState(null);
   const [formSuccess, setFormSuccess] = useState(false);
+  const navigate = useNavigate();
 
   useEffect(() => {
     // Load particles.js script dynamically
@@ -83,6 +85,7 @@ const Login = () => {
         sessionStorage.setItem("access_token", data.access);
         setFormSuccess(true);
         console.log("User Data:", data.user);
+        navigate("/dashboard"); 
       } else {
         setFormError(
           data.error || "Login failed. Please check your credentials."

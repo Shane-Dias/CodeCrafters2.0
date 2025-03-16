@@ -1,6 +1,7 @@
 "use client";
 
 import { useState, useEffect } from "react";
+import { useNavigate } from "react-router-dom";
 
 const SignUp = () => {
   const [formData, setFormData] = useState({
@@ -14,6 +15,7 @@ const SignUp = () => {
   const [isSubmitting, setIsSubmitting] = useState(false);
   const [formError, setFormError] = useState(null);
   const [formSuccess, setFormSuccess] = useState(false);
+  const navigate = useNavigate();
 
   useEffect(() => {
     // Load particles.js script dynamically
@@ -92,6 +94,7 @@ const SignUp = () => {
           bank_account: "",
           password: "",
         });
+        navigate("/login");
       } else {
         setFormError(typeof data === "string" ? data : JSON.stringify(data));
       }
