@@ -50,7 +50,9 @@ class LoginUser(APIView):
             }, status=status.HTTP_400_BAD_REQUEST)
             
         try:
-            user = get_object_or_404(User, email=email)
+            user = get_object_or_404(CustomUser, email=email)
+            print("found user")
+            print(check_password(password, user.password))
             if check_password(password, user.password):
                 refresh = RefreshToken.for_user(user)
                 return Response({
@@ -79,7 +81,7 @@ class GetUser(APIView):
                 try:
                     token_str = auth_header.split(' ')[1]
                     token = AccessToken(token_str)
-                    user = User.objects.get(id=token['user_id'])
+                    user = CustomUser.objects.get(id=token['user_id'])
                 except Exception as e:
                     return Response({"error": "Invalid or expired token"}, status=status.HTTP_401_UNAUTHORIZED)
             else:
