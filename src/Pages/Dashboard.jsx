@@ -63,31 +63,81 @@ const InvestmentDashboard = () => {
     { name: "Jul", amount: 2000 },
   ];
 
+  // State variables
+  const [newsData, setNewsData] = useState(null);
+  const [loading, setLoading] = useState(true);
+  const [error, setError] = useState(null);
+
   useEffect(() => {
-    const fetchuserdata = async () => {
+    const controller = new AbortController();
+    const signal = controller.signal;
+
+    const fetchUserData = async () => {
       try {
-        const response = await fetch(
-          "http://127.0.0.1:8000/api/accounts/get_user/",
-          {
-            method: "GET",
-            headers: {
-              "Content-Type": "application/json",
-              Authorization: `Bearer ${sessionStorage.getItem("access_token")}`,
-            },
-          }
-        );
-        if (response.ok) {
-          const data = await response.json();
-          console.log(data);
-          setUserData(data);
-        }
+        const response = await fetch("http://127.0.0.1:8000/api/accounts/get_user/", {
+          method: "GET",
+          headers: {
+            "Content-Type": "application/json",
+            Authorization: `Bearer ${sessionStorage.getItem("access_token")}`,
+          },
+          signal, // Add signal for cleanup
+        });
+
+        if (!response.ok) throw new Error('Failed to fetch user data');
+        
+        const data = await response.json();
+        setUserData(data);
       } catch (error) {
-        console.error("Error:", error);
+        if (error.name !== 'AbortError') {
+          console.error("Error fetching user data:", error);
+          setError(error.message);
+        }
       }
     };
 
-    fetchuserdata();
-  }, []);
+    const fetchNews = async () => {
+      try {
+        const response = await fetch("http://127.0.0.1:8000/api/recommendations/news/", {
+          method: "GET",
+          headers: {
+            "Content-Type": "application/json",
+            Authorization: `Bearer ${sessionStorage.getItem("access_token")}`,
+          },
+          signal, // Add signal for cleanup
+        });
+
+        if (!response.ok) throw new Error('Failed to fetch news');
+        
+        const data = await response.json();
+        setNewsData(data);
+      } catch (error) {
+        if (error.name !== 'AbortError') {
+          console.error("Error fetching news:", error);
+          setError(error.message);
+        }
+      }
+    };
+
+    const fetchData = async () => {
+      setLoading(true);
+      setError(null);
+
+      try {
+        await Promise.all([fetchUserData(), fetchNews()]);
+      } catch (error) {
+        console.error("Error in fetching data:", error);
+        setError(error.message);
+      } finally {
+        setLoading(false);
+      }
+    };
+
+    fetchData();
+
+    // Cleanup function
+    return () => controller.abort();
+  }, []); // Add dependencies if needed
+
 
   const COLORS = [
     "#4f46e5",
@@ -98,9 +148,39 @@ const InvestmentDashboard = () => {
     "#f43f5e",
   ];
 
+  // Handle loading and error states
+  if (loading) {
+    return (
+      <div className="flex items-center justify-center min-h-screen bg-gray-900">
+        <div className="text-center">
+          <div className="animate-spin rounded-full h-12 w-12 border-t-2 border-b-2 border-indigo-500 mx-auto"></div>
+          <p className="mt-4 text-lg text-gray-300">Loading dashboard...</p>
+        </div>
+      </div>
+    );
+  }
+
+  if (error) {
+    return (
+      <div className="flex items-center justify-center min-h-screen bg-gray-900">
+        <div className="bg-gray-800 p-6 rounded-lg shadow-lg max-w-md">
+          <h2 className="text-xl font-bold text-red-400 mb-4">Error Loading Dashboard</h2>
+          <p className="text-gray-300">{error}</p>
+          <button 
+            onClick={() => window.location.reload()}
+            className="mt-4 bg-indigo-600 hover:bg-indigo-700 text-white px-4 py-2 rounded"
+          >
+            Retry
+          </button>
+        </div>
+      </div>
+    );
+  }
+
   return (
-    <div className="flex min-h-screen bg-gray-900 text-gray-100 pt-20">
-      <div className="w-16 lg:w-64 bg-gray-800 shadow-lg p-4 hidden md:block">
+    <div className="flex min-h-screen bg-gray-900 text-gray-100">
+      {/* Sidebar with fixed position */}
+      <div className="fixed top-0 left-0 h-full w-16 lg:w-64 bg-gray-800 shadow-lg p-4 hidden md:block z-10">
         {/* Sidebar content */}
         <div className="flex flex-col items-center lg:items-start space-y-8 mt-6">
           <div className="flex items-center space-x-3">
@@ -140,30 +220,61 @@ const InvestmentDashboard = () => {
         </div>
       </div>
 
-      <div className="flex-1 p-6 overflow-y-auto">
-        <div className="flex justify-between items-center mb-8">
+      {/* Main content with adjusted padding to account for fixed sidebar */}
+      <div className="flex-1 md:ml-16 lg:ml-64 p-6 overflow-y-auto">
+        <div className="flex justify-between items-center mb-8 pt-4">
           <h1 className="text-3xl font-bold text-gray-100">
             Investment Dashboard
           </h1>
           <div className="flex items-center space-x-4">
             <div className="relative">
-              <Bell size={20} className="text-gray-300" />
+              <Bell size={20} className="text-gray-300 hover:text-indigo-400 cursor-pointer transition-colors" />
               <div className="absolute -top-1 -right-1 w-4 h-4 bg-red-500 rounded-full flex items-center justify-center">
                 <span className="text-white text-xs">3</span>
               </div>
             </div>
-            <div className="w-8 h-8 bg-gradient-to-br from-indigo-500 to-violet-500 rounded-full flex items-center justify-center">
+            <div className="w-8 h-8 bg-gradient-to-br from-indigo-500 to-violet-500 rounded-full flex items-center justify-center cursor-pointer hover:shadow-md hover:shadow-indigo-500/50 transition-all">
               <span className="text-white font-medium">JP</span>
             </div>
           </div>
         </div>
 
+        {/* News section - properly styled */}
+        {newsData && (
+  <Card className="bg-gray-800 rounded-xl shadow-lg shadow-purple-500/30 hover:shadow-purple-500/50 transition-all duration-300 border-2 border-purple-500/50 mb-8">
+    <CardContent className="p-6">
+      <h2 className="text-xl font-semibold text-gray-100 mb-4 flex items-center">
+        <span className="mr-2">📰</span>Latest Market Insights
+      </h2>
+      <div className="prose prose-invert max-w-none">
+        {newsData.bot_response && (
+          <div className="space-y-4">
+            {/* Process the response to remove asterisks and make text bold */}
+            {newsData.bot_response.split("\n").map((paragraph, index) => {
+              // Remove extra asterisks and wrap text in <strong> tags
+              const formattedParagraph = paragraph.replace(/\*\*(.*?)\*\*/g, '<strong>$1</strong>');
+
+              return (
+                <p
+                  key={index}
+                  className="text-gray-300 text-sm leading-relaxed"
+                  dangerouslySetInnerHTML={{ __html: formattedParagraph }}
+                />
+              );
+            })}
+          </div>
+        )}
+      </div>
+    </CardContent>
+  </Card>
+)}
+
         {/* Stats Cards with glowing effects */}
-        <div className="grid grid-cols-2 md:grid-cols-3 lg:grid-cols-5 gap-4 mb-8">
+        <div className="grid grid-cols-1 sm:grid-cols-2 md:grid-cols-3 lg:grid-cols-5 gap-4 mb-8">
           {[
             {
               title: "Balance",
-              amount: userData.wallet,
+              amount: userData.wallet ? `$${userData.wallet}` : "$0.00",
               icon: Wallet,
               glow: "shadow-lg shadow-indigo-500/50",
               color: "bg-gray-800",
@@ -173,15 +284,15 @@ const InvestmentDashboard = () => {
             {
               title: "Investments",
               amount: userData.total_investment
-                ? parseFloat(userData.total_investment).toLocaleString(
+                ? `$${parseFloat(userData.total_investment).toLocaleString(
                     "en-US",
                     {
                       style: "decimal",
                       minimumFractionDigits: 2,
                       maximumFractionDigits: 2,
                     }
-                  )
-                : "0.00",
+                  )}`
+                : "$0.00",
               icon: TrendingUp,
               glow: "shadow-lg shadow-cyan-500/50",
               color: "bg-gray-800",
@@ -191,12 +302,12 @@ const InvestmentDashboard = () => {
             {
               title: "Profits",
               amount: userData.total_profit
-                ? parseFloat(userData.total_profit).toLocaleString("en-US", {
+                ? `$${parseFloat(userData.total_profit).toLocaleString("en-US", {
                     style: "decimal",
                     minimumFractionDigits: 2,
                     maximumFractionDigits: 2,
-                  })
-                : "0.00",
+                  })}`
+                : "$0.00",
               icon: BarChart2,
               glow: "shadow-lg shadow-emerald-500/50",
               color: "bg-gray-800",
@@ -224,7 +335,7 @@ const InvestmentDashboard = () => {
           ].map((item, index) => (
             <Card
               key={index}
-              className={`${item.color} ${item.glow} rounded-xl border-2 ${item.borderColor} hover:shadow-xl hover:shadow-${item.textColor}/50 transition-all duration-300`}
+              className={`${item.color} ${item.glow} rounded-xl border-2 ${item.borderColor} hover:shadow-xl transition-all duration-300`}
             >
               <CardContent className="flex flex-col items-center p-4">
                 <item.icon size={28} className={item.textColor} />
@@ -240,7 +351,7 @@ const InvestmentDashboard = () => {
         </div>
 
         {/* Main Charts Section with glowing effects */}
-        <div className="grid grid-cols-1 md:grid-cols-2 gap-6 mb-6">
+        <div className="grid grid-cols-1 lg:grid-cols-2 gap-6 mb-6">
           {/* Performance Chart */}
           <Card className="bg-gray-800 rounded-xl shadow-lg shadow-indigo-500/30 hover:shadow-indigo-500/50 transition-all duration-300 border-2 border-indigo-500/50">
             <CardContent className="p-6">
@@ -319,8 +430,16 @@ const InvestmentDashboard = () => {
                       borderColor: "#374151",
                       color: "#f3f4f6",
                     }}
+                    formatter={(value) => [`${value}%`, ""]}
                   />
-                  <Legend />
+                  <Legend 
+                    layout="vertical" 
+                    verticalAlign="middle" 
+                    align="right"
+                    formatter={(value) => (
+                      <span className="text-gray-300">{value}</span>
+                    )}
+                  />
                 </RechartsPieChart>
               </ResponsiveContainer>
             </CardContent>
@@ -328,7 +447,7 @@ const InvestmentDashboard = () => {
         </div>
 
         {/* Additional Charts with glowing effects */}
-        <div className="grid grid-cols-1 md:grid-cols-2 gap-6 mb-8">
+        <div className="grid grid-cols-1 lg:grid-cols-2 gap-6 mb-8">
           {/* Monthly Investment Chart */}
           <Card className="bg-gray-800 rounded-xl shadow-lg shadow-violet-500/30 hover:shadow-violet-500/50 transition-all duration-300 border-2 border-violet-500/50">
             <CardContent className="p-6">
@@ -346,8 +465,16 @@ const InvestmentDashboard = () => {
                       borderColor: "#374151",
                       color: "#f3f4f6",
                     }}
+                    formatter={(value) => [`$${value}`, "Amount"]}
                   />
-                  <Bar dataKey="amount" fill="#8b5cf6" radius={[4, 4, 0, 0]} />
+                  <Bar dataKey="amount" fill="#8b5cf6" radius={[4, 4, 0, 0]}>
+                    {monthlyInvestmentData.map((entry, index) => (
+                      <Cell 
+                        key={`cell-${index}`} 
+                        fill={index === monthlyInvestmentData.length - 1 ? "#a78bfa" : "#8b5cf6"} 
+                      />
+                    ))}
+                  </Bar>
                 </BarChart>
               </ResponsiveContainer>
             </CardContent>
@@ -391,11 +518,11 @@ const InvestmentDashboard = () => {
                       <span className={`${item.textColor} font-medium`}>
                         {item.label}
                       </span>
-                      <span className="font-medium">{item.value}%</span>
+                      <span className="font-medium text-gray-300">{item.value}%</span>
                     </div>
-                    <div className="w-full bg-gray-700 rounded-full h-2.5">
+                    <div className="w-full bg-gray-700 rounded-full h-2.5 overflow-hidden">
                       <div
-                        className={`${item.color} h-2.5 rounded-full shadow-lg shadow-${item.color}/50`}
+                        className={`${item.color} h-2.5 rounded-full`}
                         style={{ width: `${item.value}%` }}
                       ></div>
                     </div>
@@ -407,14 +534,37 @@ const InvestmentDashboard = () => {
         </div>
 
         {/* Action Buttons with glowing effects */}
-        <div className="flex justify-center gap-4">
-          <Button className="bg-indigo-600 hover:bg-indigo-700 text-white px-6 py-2 rounded-lg shadow-lg shadow-indigo-500/50 hover:shadow-indigo-500/70 transition-all">
+        <div className="flex flex-wrap justify-center gap-4 mb-8">
+          <Button className="bg-indigo-600 hover:bg-indigo-700 text-white px-6 py-3 rounded-lg shadow-lg shadow-indigo-500/50 hover:shadow-indigo-500/70 transition-all font-medium">
             Buy Assets
           </Button>
-          <Button className="bg-gray-700 border border-gray-600 hover:bg-gray-600 text-gray-200 px-6 py-2 rounded-lg shadow-lg shadow-gray-700/50 hover:shadow-gray-700/70 transition-all">
+          <Button className="bg-gray-700 border border-gray-600 hover:bg-gray-600 text-gray-200 px-6 py-3 rounded-lg shadow-lg shadow-gray-700/50 hover:shadow-gray-700/70 transition-all font-medium">
             Sell Assets
           </Button>
+          <Button className="bg-cyan-600 hover:bg-cyan-700 text-white px-6 py-3 rounded-lg shadow-lg shadow-cyan-500/50 hover:shadow-cyan-500/70 transition-all font-medium">
+            View Portfolio
+          </Button>
         </div>
+        
+        {/* Mobile navigation (visible only on mobile) */}
+        <div className="fixed bottom-0 left-0 right-0 bg-gray-800 border-t border-gray-700 flex justify-around py-3 md:hidden z-10">
+          {[
+            { icon: Wallet, label: "Dashboard" },
+            { icon: PieChart, label: "Portfolio" },
+            { icon: TrendingUp, label: "Markets" },
+            { icon: Settings, label: "Settings" },
+          ].map((item, i) => (
+            <div key={i} className="flex flex-col items-center">
+              <item.icon size={20} className={i === 0 ? "text-indigo-400" : "text-gray-400"} />
+              <span className="text-xs mt-1">{item.label}</span>
+            </div>
+          ))}
+        </div>
+
+        {/* Footer */}
+        <footer className="text-center text-gray-500 text-sm py-6 mt-auto">
+          <p>© 2025 WealthPulse. All rights reserved.</p>
+        </footer>
       </div>
     </div>
   );
