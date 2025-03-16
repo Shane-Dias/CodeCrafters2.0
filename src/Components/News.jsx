@@ -1,20 +1,20 @@
 import { useEffect, useState } from "react";
+import { data } from "react-router-dom";
 
 const News = () => {
   const [news, setNews] = useState([]);
-  const API_KEY = "9EpFfCOMwG1CIfGek1dxeFXxjKEJ3JGfEbK7c6mp";
 
   useEffect(() => {
     const fetchNews = async () => {
       try {
         const response = await fetch(
-          `https://api.marketaux.com/v1/news/all?filter_entities=true&language=en&api_token=${API_KEY}`
+          `http://127.0.0.1:8000/api/recommendations/news/`
         );
 
         const data = await response.json();
-
         if (response.ok) {
-          setNews(data.data);
+          console.log(data);
+          setNews(data.bot_response);
         } else {
           console.error("Error fetching news:", data);
         }
@@ -30,19 +30,7 @@ const News = () => {
     <div className="news-container">
       <h2>Latest Financial News</h2>
       <ul>
-        {news.length > 0 ? (
-          news.map((article, index) => (
-            <li key={index} className="news-item">
-              <a href={article.url} target="_blank" rel="noopener noreferrer">
-                <h3>{article.title}</h3>
-              </a>
-              <p>{article.description}</p>
-              <small>{new Date(article.published_at).toLocaleString()}</small>
-            </li>
-          ))
-        ) : (
-          <p>Loading news...</p>
-        )}
+        <p>{news}</p>: (<p>Loading news...</p>)
       </ul>
     </div>
   );

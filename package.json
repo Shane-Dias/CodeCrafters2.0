@@ -12,6 +12,8 @@
   "dependencies": {
     "@next/font": "^14.2.15",
     "@shadcn/ui": "^0.0.4",
+    "@tsparticles/react": "^3.0.0",
+    "@tsparticles/slim": "^3.8.1",
     "animated-backgrounds": "^1.1.0",
     "clsx": "^2.1.1",
     "framer-motion": "^12.5.0",
@@ -20,6 +22,7 @@
     "lucide-react": "^0.482.0",
     "react": "^19.0.0",
     "react-dom": "^19.0.0",
+    "react-feather": "^2.0.10",
     "react-router-dom": "^7.3.0",
     "react-tsparticles": "^2.12.2",
     "recharts": "^2.15.1",

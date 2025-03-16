@@ -28,23 +28,17 @@ const AssetsMarketplace = () => {
     "MSFT",
     "AMZN",
     "TSLA",
-    "RELIANCE",
-    "TCS",
-    "INFY",
-    "HDFCBANK",
+    "META",
   ];
 
   // Company name mapping (moved from StockDetails)
   const COMPANY_NAMES = {
     AAPL: "Apple Inc.",
     GOOGL: "Alphabet Inc.",
-    MSFT: "Microsoft Corp.",
+    MSFT: "Microsoft Corporation",
     AMZN: "Amazon.com Inc.",
     TSLA: "Tesla Inc.",
-    RELIANCE: "Reliance Industries Ltd.",
-    TCS: "Tata Consultancy Services Ltd.",
-    INFY: "Infosys Ltd.",
-    HDFCBANK: "HDFC Bank Ltd.",
+    META: "Meta Platforms Inc.",
   };
 
   // Fetch stock data (initial load)
@@ -254,29 +248,6 @@ const AssetsMarketplace = () => {
           <h2 className="text-3xl font-bold text-cyan-400 drop-shadow-[0_0_10px_rgba(34,211,238,0.6)]">
             Stock Details
           </h2>
-
-          <div className="flex space-x-4">
-            <button
-              onClick={() => setViewMode("card")}
-              className={`px-4 py-2 rounded-lg font-medium transition-all duration-300 ${
-                viewMode === "card"
-                  ? "bg-gray-700 text-cyan-400 shadow-[inset_3px_3px_6px_rgba(0,0,0,0.25),inset_-3px_-3px_6px_rgba(70,70,70,0.08)] border-t border-l border-gray-600 drop-shadow-[0_0_5px_rgba(34,211,238,0.4)]"
-                  : "bg-gray-800 text-gray-400 shadow-[3px_3px_6px_rgba(0,0,0,0.25),-3px_-3px_6px_rgba(70,70,70,0.08)]"
-              }`}
-            >
-              Card View
-            </button>
-            <button
-              onClick={() => setViewMode("table")}
-              className={`px-4 py-2 rounded-lg font-medium transition-all duration-300 ${
-                viewMode === "table"
-                  ? "bg-gray-700 text-cyan-400 shadow-[inset_3px_3px_6px_rgba(0,0,0,0.25),inset_-3px_-3px_6px_rgba(70,70,70,0.08)] border-t border-l border-gray-600 drop-shadow-[0_0_5px_rgba(34,211,238,0.4)]"
-                  : "bg-gray-800 text-gray-400 shadow-[3px_3px_6px_rgba(0,0,0,0.25),-3px_-3px_6px_rgba(70,70,70,0.08)]"
-              }`}
-            >
-              Table View
-            </button>
-          </div>
         </div>
 
         {/* Pass the relevant props to StockDetails */}

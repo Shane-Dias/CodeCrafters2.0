@@ -22,6 +22,7 @@ class CustomUser(AbstractBaseUser, PermissionsMixin):
     email = models.EmailField(unique=True)
     phone_number = models.CharField(max_length=15)
     address = models.TextField()
+    wallet = models.IntegerField(default=0, null=True, blank=True)
     bank_account = models.CharField(max_length=50)
 
     is_active = models.BooleanField(default=True)
@@ -51,7 +52,7 @@ from django.conf import settings
 
 class StockPurchase(models.Model):
     user = models.ForeignKey(settings.AUTH_USER_MODEL, on_delete=models.CASCADE)
-    symbol = models.CharField(max_length=10)
+    symbol = models.CharField(max_length=10, default = "None")
     company_name = models.CharField(max_length=255)
     price = models.FloatField()
     quantity = models.IntegerField()

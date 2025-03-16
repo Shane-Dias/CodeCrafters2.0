@@ -11,9 +11,12 @@ import InvestmentForm from "./Pages/InvestmentForm";
 import SignUp from "./Components/SignUp";
 import Login from "./Components/Login";
 
-import News from "./components/News";
+import News from "./Components/News";
+
+import StockComparison from "./Components/StockComparison";
 
 import Chatbot from "./Components/chartbotTrial";
+import ChatbotWidget from "./Components/Chatbot_Widget";
 
 import Navbar from "./Components/Navbar";
 import Dashboard from "./Pages/Dashboard";
@@ -25,11 +28,14 @@ import Trade from "./Pages/Trade";
 import StockChart from "./Components/StockChart";
 import Exchange from "./Pages/Exchange";
 import Transaction from "./Pages/Transaction";
+import SuccessPage from "./Pages/SuccessPage";
+import Footer from "./Components/Footer";
 
 function App() {
   return (
     <BrowserRouter>
       <Navbar />
+      <ChatbotWidget />
       <Routes>
         <Route path="/" element={<Home />} />
         {/* <Route path="/about" element={<About />} /> */}
@@ -40,8 +46,6 @@ function App() {
         <Route path="/view/:id" element={<View />} />
         <Route path="/crypto" element={<Crypto />} />
         <Route path="/trade" element={<Trade />} />
-        
-        
         <Route path="/register" element={<SignUp />} />
         <Route path="/login" element={<Login />} />
         <Route path="/dashboard" element={<Dashboard />} />
@@ -52,7 +56,9 @@ function App() {
         <Route path="/exchange" element={<Exchange />} />
         <Route path="/transaction" element={<Transaction />} />
         <Route path="/investmentsuggestions" element={<InvestmentForm />} />
+        <Route path="/success" element={<SuccessPage />} />
       </Routes>
+      <Footer />
     </BrowserRouter>
   );
 }

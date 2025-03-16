@@ -16,6 +16,9 @@ const InvestmentForm = () => {
   const [volatility, setVolatility] = useState(0.15);
   const [showModal, setShowModal] = useState(false);
   const [watchlist, setWatchlist] = useState([]);
+  const [portfolioData, setPortfolioData] = useState(null); // Store API response
+  const [isLoading, setIsLoading] = useState(false); // Loading state
+  const [error, setError] = useState(null); // Error state
 
   // Retrieve watchlist from localStorage on component mount
   useEffect(() => {
@@ -28,12 +31,6 @@ const InvestmentForm = () => {
     }
   }, []);
 
-  // Handle form submit
-  const handleSubmit = (e) => {
-    e.preventDefault();
-    setShowModal(true);
-  };
-
   // Handle buy stocks
   const handleBuy = () => {
     alert("Stocks purchased successfully!");
@@ -43,6 +40,44 @@ const InvestmentForm = () => {
   // Handle back button in modal
   const handleBack = () => {
     setShowModal(false);
+  };
+
+  // Handle form submission
+  const handleSubmit = async (e) => {
+    e.preventDefault();
+    setIsLoading(true);
+    setError(null);
+
+    try {
+      const response = await fetch(
+        "http://127.0.0.1:8000/api/recommendations/recommend_portfolio/",
+        {
+          method: "POST",
+          headers: {
+            "Content-Type": "application/json",
+          },
+          body: JSON.stringify({
+            tickers: watchlist,
+            total_portfolio_value: Number.parseFloat(investmentAmount),
+            risk: riskLevel.toLowerCase(),
+            volatility: Number.parseFloat(volatility),
+          }),
+        }
+      );
+
+      if (!response.ok) {
+        throw new Error("Failed to get portfolio recommendation");
+      }
+
+      const data = await response.json();
+      setPortfolioData(data); // Store the API response
+      setShowModal(true); // Show the modal
+    } catch (err) {
+      setError(err.message);
+      alert(`Error: ${err.message}`);
+    } finally {
+      setIsLoading(false);
+    }
   };
 
   return (
@@ -253,11 +288,19 @@ const InvestmentForm = () => {
                   boxShadow:
                     "6px 6px 12px rgba(0, 0, 0, 0.3), -2px -2px 6px rgba(59, 59, 90, 0.2)",
                 }}
+                disabled={isLoading}
               >
-                <span className="relative z-10 flex items-center justify-center">
-                  <CreditCard className="mr-2" size={20} />
-                  Invest Now
-                </span>
+                {isLoading ? (
+                  <span className="flex items-center justify-center">
+                    <RefreshCw className="animate-spin mr-2" size={20} />
+                    Loading...
+                  </span>
+                ) : (
+                  <span className="flex items-center justify-center">
+                    <CreditCard className="mr-2" size={20} />
+                    Invest Now
+                  </span>
+                )}
               </button>
             </div>
           </div>
@@ -291,148 +334,106 @@ const InvestmentForm = () => {
                   <CheckCircle size={24} className="text-cyan-400" />
                 </div>
                 <h2 className="text-2xl font-bold text-gray-200">
-                  Investment Summary
+                  Portfolio Recommendation
                 </h2>
               </div>
 
               {/* Results Panel */}
-              <div
-                className="p-6 rounded-2xl mb-6"
-                style={{
-                  backgroundColor: "#252542",
-                  boxShadow:
-                    "inset 5px 5px 10px rgba(0, 0, 0, 0.3), inset -1px -1px 3px rgba(59, 59, 90, 0.2)",
-                }}
-              >
-                {/* Expected Returns */}
-                <div className="mb-4">
-                  <div className="text-sm text-gray-400 mb-1">
-                    Expected Annual Returns
+              {portfolioData && (
+                <div
+                  className="p-6 rounded-2xl mb-6"
+                  style={{
+                    backgroundColor: "#252542",
+                    boxShadow:
+                      "inset 5px 5px 10px rgba(0, 0, 0, 0.3), inset -1px -1px 3px rgba(59, 59, 90, 0.2)",
+                  }}
+                >
+                  {/* Expected Returns */}
+                  <div className="mb-4">
+                    <div className="text-sm text-gray-400 mb-1">
+                      Expected Annual Returns
+                    </div>
+                    <div
+                      className="text-2xl font-bold"
+                      style={{
+                        background: "linear-gradient(90deg, #06b6d4, #b388ff)",
+                        WebkitBackgroundClip: "text",
+                        WebkitTextFillColor: "transparent",
+                      }}
+                    >
+                      {portfolioData.expected_return}%
+                    </div>
                   </div>
-                  <div
-                    className="text-2xl font-bold"
-                    style={{
-                      background: "linear-gradient(90deg, #06b6d4, #b388ff)",
-                      WebkitBackgroundClip: "text",
-                      WebkitTextFillColor: "transparent",
-                    }}
-                  >
-                    8.5%
-                  </div>
-                </div>
 
-                <div className="grid grid-cols-2 gap-4 mb-4">
-                  {/* Annual Volatility */}
+                  {/* Volatility and Sharpe Ratio */}
+                  <div className="grid grid-cols-2 gap-4 mb-4">
+                    <div>
+                      <div className="text-sm text-gray-400 mb-1">
+                        Annual Volatility
+                      </div>
+                      <div className="text-lg font-semibold text-gray-200">
+                        {portfolioData.volatility}%
+                      </div>
+                    </div>
+
+                    <div>
+                      <div className="text-sm text-gray-400 mb-1">
+                        Sharpe Ratio
+                      </div>
+                      <div className="text-lg font-semibold text-gray-200">
+                        {portfolioData.sharpe}
+                      </div>
+                    </div>
+                  </div>
+
+                  {/* Allocation */}
+                  <div className="mb-4">
+                    <div className="text-sm text-gray-400 mb-2">
+                      Dynamic Allocation
+                    </div>
+
+                    {portfolioData.allocation.map((stock, index) => (
+                      <div key={index} className="mb-2">
+                        <div className="flex justify-between text-sm mb-1">
+                          <span className="font-medium text-gray-300">
+                            {stock.ticker}
+                          </span>
+                          <span className="font-medium text-gray-300">
+                            {stock.percentage}%
+                          </span>
+                        </div>
+                        <div
+                          className="w-full h-2 rounded-full overflow-hidden"
+                          style={{
+                            backgroundColor: "#1a1a2e",
+                            boxShadow:
+                              "inset 2px 2px 5px rgba(0, 0, 0, 0.3), inset -1px -1px 3px rgba(59, 59, 90, 0.2)",
+                          }}
+                        >
+                          <div
+                            className="h-full rounded-full"
+                            style={{
+                              width: `${stock.percentage}%`,
+                              background:
+                                "linear-gradient(90deg, #06b6d4, #b388ff)",
+                            }}
+                          ></div>
+                        </div>
+                      </div>
+                    ))}
+                  </div>
+
+                  {/* Funds Remaining */}
                   <div>
                     <div className="text-sm text-gray-400 mb-1">
-                      Annual Volatility
+                      Funds Remaining
                     </div>
-                    <div className="text-lg font-semibold text-gray-200">
-                      12.3%
-                    </div>
-                  </div>
-
-                  {/* Sharpe Ratio */}
-                  <div>
-                    <div className="text-sm text-gray-400 mb-1">
-                      Sharpe Ratio
-                    </div>
-                    <div className="text-lg font-semibold text-gray-200">
-                      0.69
+                    <div className="text-lg font-bold text-green-400">
+                      ${portfolioData.leftover}
                     </div>
                   </div>
                 </div>
-
-                {/* Allocation */}
-                <div className="mb-4">
-                  <div className="text-sm text-gray-400 mb-2">
-                    Dynamic Allocation
-                  </div>
-
-                  {/* AAPL */}
-                  <div className="mb-2">
-                    <div className="flex justify-between text-sm mb-1">
-                      <span className="font-medium text-gray-300">AAPL</span>
-                      <span className="font-medium text-gray-300">40%</span>
-                    </div>
-                    <div
-                      className="w-full h-2 rounded-full overflow-hidden"
-                      style={{
-                        backgroundColor: "#1a1a2e",
-                        boxShadow:
-                          "inset 2px 2px 5px rgba(0, 0, 0, 0.3), inset -1px -1px 3px rgba(59, 59, 90, 0.2)",
-                      }}
-                    >
-                      <div
-                        className="h-full rounded-full"
-                        style={{
-                          width: "40%",
-                          background:
-                            "linear-gradient(90deg, #06b6d4, #b388ff)",
-                        }}
-                      ></div>
-                    </div>
-                  </div>
-
-                  {/* GOOGL */}
-                  <div className="mb-2">
-                    <div className="flex justify-between text-sm mb-1">
-                      <span className="font-medium text-gray-300">GOOGL</span>
-                      <span className="font-medium text-gray-300">30%</span>
-                    </div>
-                    <div
-                      className="w-full h-2 rounded-full overflow-hidden"
-                      style={{
-                        backgroundColor: "#1a1a2e",
-                        boxShadow:
-                          "inset 2px 2px 5px rgba(0, 0, 0, 0.3), inset -1px -1px 3px rgba(59, 59, 90, 0.2)",
-                      }}
-                    >
-                      <div
-                        className="h-full rounded-full"
-                        style={{
-                          width: "30%",
-                          background:
-                            "linear-gradient(90deg, #06b6d4, #b388ff)",
-                        }}
-                      ></div>
-                    </div>
-                  </div>
-
-                  {/* MSFT */}
-                  <div>
-                    <div className="flex justify-between text-sm mb-1">
-                      <span className="font-medium text-gray-300">MSFT</span>
-                      <span className="font-medium text-gray-300">30%</span>
-                    </div>
-                    <div
-                      className="w-full h-2 rounded-full overflow-hidden"
-                      style={{
-                        backgroundColor: "#1a1a2e",
-                        boxShadow:
-                          "inset 2px 2px 5px rgba(0, 0, 0, 0.3), inset -1px -1px 3px rgba(59, 59, 90, 0.2)",
-                      }}
-                    >
-                      <div
-                        className="h-full rounded-full"
-                        style={{
-                          width: "30%",
-                          background:
-                            "linear-gradient(90deg, #06b6d4, #b388ff)",
-                        }}
-                      ></div>
-                    </div>
-                  </div>
-                </div>
-
-                {/* Funds Remaining */}
-                <div>
-                  <div className="text-sm text-gray-400 mb-1">
-                    Funds Remaining
-                  </div>
-                  <div className="text-lg font-bold text-green-400">$500</div>
-                </div>
-              </div>
+              )}
 
               {/* Modal Buttons */}
               <div className="flex gap-4">
