@@ -8,8 +8,7 @@ const Home = () => {
     <div>
       <Navbar />
       <Hero />
-      <Home_Dash />
-      <InvestmentSuggestions />
+
     </div>
   );
 };
