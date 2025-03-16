@@ -1,63 +1,155 @@
-import React, { useState, useEffect } from 'react';
-import { TrendingUp, Briefcase, Filter, Search, Star, BarChart2 } from 'lucide-react';
+import React, { useState, useEffect } from "react";
+import {
+  TrendingUp,
+  Briefcase,
+  Filter,
+  Search,
+  Star,
+  BarChart2,
+} from "lucide-react";
+import StockDetails from "../Components/StockDetails";
 
 const AssetsMarketplace = () => {
   const [assets, setAssets] = useState([]);
   const [filteredAssets, setFilteredAssets] = useState([]);
   const [watchlist, setWatchlist] = useState([]);
-  const [assetType, setAssetType] = useState('All');
-  const [searchQuery, setSearchQuery] = useState('');
-  const [sortBy, setSortBy] = useState('trending');
-  
-  // Mock data initialization
+  const [assetType, setAssetType] = useState("All");
+  const [searchQuery, setSearchQuery] = useState("");
+  const [sortBy, setSortBy] = useState("trending");
+  const [viewMode, setViewMode] = useState("card"); // Added from StockDetails
+
+  // Mock API Key - In production, use environment variables
+  const API_KEY = import.meta.env.VITE_FINNHUB_API_KEY || "demo_key";
+
+  // Stock symbols to fetch (moved from StockDetails)
+  const SYMBOLS = [
+    "AAPL",
+    "GOOGL",
+    "MSFT",
+    "AMZN",
+    "TSLA",
+    "META",
+  ];
+
+  // Company name mapping (moved from StockDetails)
+  const COMPANY_NAMES = {
+    AAPL: "Apple Inc.",
+    GOOGL: "Alphabet Inc.",
+    MSFT: "Microsoft Corporation",
+    AMZN: "Amazon.com Inc.",
+    TSLA: "Tesla Inc.",
+    META: "Meta Platforms Inc.",
+  };
+
+  // Fetch stock data (initial load)
   useEffect(() => {
-    const mockAssets = [
-      { id: 1, name: 'Apple Inc.', symbol: 'AAPL', type: 'Stock', price: 178.42, change: 2.35, changePercent: 1.33 },
-      { id: 2, name: 'Microsoft', symbol: 'MSFT', type: 'Stock', price: 332.18, change: 3.21, changePercent: 0.98 },
-      { id: 3, name: 'Bitcoin', symbol: 'BTC', type: 'Crypto', price: 42876.13, change: -1087.22, changePercent: -2.47 },
-      { id: 4, name: 'Ethereum', symbol: 'ETH', type: 'Crypto', price: 2283.64, change: -32.18, changePercent: -1.39 },
-      { id: 5, name: 'Tesla Inc.', symbol: 'TSLA', type: 'Stock', price: 245.30, change: 5.62, changePercent: 2.35 },
-      { id: 6, name: 'Gold', symbol: 'GLD', type: 'Commodity', price: 2391.45, change: 12.56, changePercent: 0.53 },
-    ];
-    setAssets(mockAssets);
-    setFilteredAssets(mockAssets);
+    const fetchStockData = async () => {
+      try {
+        const stockData = await Promise.all(
+          SYMBOLS.map(async (symbol) => {
+            const response = await fetch(
+              `https://finnhub.io/api/v1/quote?symbol=${symbol}&token=${API_KEY}`
+            );
+            if (!response.ok) {
+              throw new Error(`Failed to fetch data for ${symbol}`);
+            }
+            const data = await response.json();
+            return {
+              symbol,
+              companyName: COMPANY_NAMES[symbol] || symbol,
+              type: "Stock", // Adding type for filtering
+              ...data,
+              // Normalize property names to match the expected format in the filter logic
+              price: data.c,
+              changePercent: data.dp,
+            };
+          })
+        );
+        setAssets(stockData);
+        setFilteredAssets(stockData);
+      } catch (err) {
+        console.error("Error fetching stock data:", err);
+      }
+    };
+
+    fetchStockData();
   }, []);
 
   // Filter and sort assets
   useEffect(() => {
     let result = [...assets];
-    if (assetType !== 'All') result = result.filter(asset => asset.type === assetType);
+    if (assetType !== "All")
+      result = result.filter((asset) => asset.type === assetType);
     if (searchQuery) {
       const query = searchQuery.toLowerCase();
-      result = result.filter(asset => asset.name.toLowerCase().includes(query) || asset.symbol.toLowerCase().includes(query));
+      result = result.filter(
+        (asset) =>
+          asset.name?.toLowerCase().includes(query) ||
+          asset.companyName?.toLowerCase().includes(query) ||
+          asset.symbol?.toLowerCase().includes(query)
+      );
     }
-    
+
     // Sort logic
-    if (sortBy === 'priceAsc') result.sort((a, b) => a.price - b.price);
-    else if (sortBy === 'priceDesc') result.sort((a, b) => b.price - a.price);
-    else if (sortBy === 'gainers') result.sort((a, b) => b.changePercent - a.changePercent);
-    else if (sortBy === 'losers') result.sort((a, b) => a.changePercent - b.changePercent);
-    else result.sort((a, b) => Math.abs(b.changePercent) - Math.abs(a.changePercent)); // trending
-    
+    if (sortBy === "priceAsc") result.sort((a, b) => a.price - b.price);
+    else if (sortBy === "priceDesc") result.sort((a, b) => b.price - a.price);
+    else if (sortBy === "gainers")
+      result.sort((a, b) => b.changePercent - a.changePercent);
+    else if (sortBy === "losers")
+      result.sort((a, b) => a.changePercent - b.changePercent);
+    else
+      result.sort(
+        (a, b) => Math.abs(b.changePercent) - Math.abs(a.changePercent)
+      ); // trending
+
     setFilteredAssets(result);
   }, [assets, assetType, searchQuery, sortBy]);
 
+  // Load watchlist from localStorage
+  useEffect(() => {
+    const storedWatchlist = JSON.parse(localStorage.getItem("watchlist")) || [];
+    setWatchlist(storedWatchlist);
+  }, []);
+
   const toggleWatchlist = (id) => {
-    setWatchlist(watchlist.includes(id) 
-      ? watchlist.filter(item => item !== id) 
-      : [...watchlist, id]);
+    let updatedWatchlist;
+    if (watchlist.includes(id)) {
+      updatedWatchlist = watchlist.filter((item) => item !== id);
+    } else {
+      updatedWatchlist = [...watchlist, id];
+    }
+
+    setWatchlist(updatedWatchlist);
+    localStorage.setItem("watchlist", JSON.stringify(updatedWatchlist));
   };
 
   // Utility functions
-  const getChangeColor = (change) => change > 0 ? 'text-emerald-400' : change < 0 ? 'text-red-400' : 'text-gray-400';
+  const getChangeColor = (change) =>
+    change > 0
+      ? "text-emerald-400"
+      : change < 0
+      ? "text-red-400"
+      : "text-gray-400";
+
   const getAssetTypeBorder = (type) => {
     const borders = {
-      'Stock': 'border-blue-700',
-      'Crypto': 'border-purple-700',
-      'ETF': 'border-green-700',
-      'Commodity': 'border-yellow-700'
+      Stock: "border-blue-700",
+      Crypto: "border-purple-700",
+      ETF: "border-green-700",
+      Commodity: "border-yellow-700",
     };
-    return borders[type] || 'border-gray-700';
+    return borders[type] || "border-gray-700";
+  };
+
+  // Add sorting handler from StockDetails
+  const requestSort = (key) => {
+    // Map the keys to the expected sortBy values
+    const keyToSortMap = {
+      c: sortBy === "priceDesc" ? "priceAsc" : "priceDesc",
+      dp: sortBy === "gainers" ? "losers" : "gainers",
+    };
+
+    setSortBy(keyToSortMap[key] || "trending");
   };
 
   return (
@@ -71,12 +163,14 @@ const AssetsMarketplace = () => {
         <div className="flex flex-col md:flex-row items-center gap-6 mb-8 justify-center">
           <div className="bg-white/5 p-6 rounded-2xl border-[4px] border-blue-700 shadow-lg flex items-center justify-between group w-64 md:w-80 hover:scale-105 transition-all">
             <div>
-              <h3 className="text-gray-400 font-medium mb-1">Available Assets</h3>
+              <h3 className="text-gray-400 font-medium mb-1">
+                Available Assets
+              </h3>
               <p className="text-3xl font-bold text-white">{assets.length}</p>
             </div>
             <Briefcase className="text-blue-400 w-12 h-12 group-hover:scale-110 transition-transform" />
           </div>
-          
+
           <div className="bg-white/5 p-6 rounded-2xl border-[4px] border-green-700 shadow-lg flex items-center justify-between group w-64 md:w-80 hover:scale-105 transition-all">
             <div>
               <h3 className="text-gray-400 font-medium mb-1">Market Trend</h3>
@@ -84,101 +178,86 @@ const AssetsMarketplace = () => {
             </div>
             <TrendingUp className="text-emerald-400 w-12 h-12 group-hover:scale-110 transition-transform" />
           </div>
-          
-          <div className="bg-white/5 p-6 rounded-2xl border-[4px] border-yellow-700 shadow-lg flex items-center justify-between group w-64 md:w-80 hover:scale-105 transition-all">
-            <div>
-              <h3 className="text-gray-400 font-medium mb-1">Your Watchlist</h3>
-              <p className="text-3xl font-bold text-white">{watchlist.length}</p>
+
+          <a href="/investmentsuggestions" className="cursor-pointer">
+            <div className="bg-white/5 p-6 rounded-2xl border-[4px] border-yellow-700 shadow-lg flex items-center justify-between group w-64 md:w-80 hover:scale-105 transition-all">
+              <div>
+                <h3 className="text-gray-400 font-medium mb-1">
+                  Your Watchlist
+                </h3>
+                <p className="text-3xl font-bold text-white">
+                  {watchlist.length}
+                </p>
+              </div>
+              <Star className="text-yellow-400 w-12 h-12 group-hover:scale-110 transition-transform" />
             </div>
-            <Star className="text-yellow-400 w-12 h-12 group-hover:scale-110 transition-transform" />
-          </div>
+          </a>
         </div>
 
-        {/* Search and Filters */}
-        <div className="flex flex-col md:flex-row gap-4 mb-8">
-          <div className="relative w-full md:w-1/3">
-            <Search className="absolute left-3 top-3 text-gray-400" />
+        {/* Adding search/filter controls from original AssetsMarketplace */}
+        <div className="mb-8 flex flex-col md:flex-row gap-4 items-center justify-between">
+          <div className="relative w-full md:w-64">
+            <Search
+              className="absolute left-3 top-1/2 transform -translate-y-1/2 text-gray-400"
+              size={18}
+            />
             <input
               type="text"
-              placeholder="Search assets..."
-              className="pl-10 py-3 w-full bg-white/5 border border-blue-800/50 rounded-lg text-white"
               value={searchQuery}
               onChange={(e) => setSearchQuery(e.target.value)}
+              placeholder="Search assets..."
+              className="w-full pl-10 pr-4 py-3 bg-gray-800/50 border border-gray-700 rounded-xl focus:outline-none focus:ring-2 focus:ring-blue-500 text-white"
             />
           </div>
-          
-          <div className="flex flex-wrap gap-4 w-full md:w-2/3 justify-end">
+
+          <div className="flex gap-4 w-full md:w-auto">
             <select
-              className="px-4 py-3 bg-white/5 border border-blue-800/50 rounded-lg text-white"
               value={assetType}
               onChange={(e) => setAssetType(e.target.value)}
+              className="px-4 py-3 bg-gray-800/50 border border-gray-700 rounded-xl focus:outline-none focus:ring-2 focus:ring-blue-500 text-white appearance-none cursor-pointer"
             >
-              <option value="All">All Asset Types</option>
+              <option value="All">All Types</option>
               <option value="Stock">Stocks</option>
-              <option value="Crypto">Cryptocurrencies</option>
+              <option value="Crypto">Crypto</option>
               <option value="ETF">ETFs</option>
               <option value="Commodity">Commodities</option>
             </select>
-            
-            <select
-              className="px-4 py-3 bg-white/5 border border-blue-800/50 rounded-lg text-white"
-              value={sortBy}
-              onChange={(e) => setSortBy(e.target.value)}
-            >
-              <option value="trending">Most Volatile</option>
-              <option value="gainers">Top Gainers</option>
-              <option value="losers">Top Losers</option>
-              <option value="priceAsc">Price: Low to High</option>
-              <option value="priceDesc">Price: High to Low</option>
-            </select>
-            
-            <button className="px-4 py-3 bg-blue-600 text-white rounded-lg flex items-center gap-2">
-              <Filter size={18} />
-              Filters
-            </button>
+
+            <div className="relative">
+              <select
+                value={sortBy}
+                onChange={(e) => setSortBy(e.target.value)}
+                className="px-4 pl-10 py-3 bg-gray-800/50 border border-gray-700 rounded-xl focus:outline-none focus:ring-2 focus:ring-blue-500 text-white appearance-none cursor-pointer"
+              >
+                <option value="trending">Trending</option>
+                <option value="priceAsc">Price: Low to High</option>
+                <option value="priceDesc">Price: High to Low</option>
+                <option value="gainers">Top Gainers</option>
+                <option value="losers">Top Losers</option>
+              </select>
+              <Filter
+                className="absolute left-3 top-1/2 transform -translate-y-1/2 text-gray-400"
+                size={18}
+              />
+            </div>
           </div>
         </div>
 
-        {/* Assets Grid */}
-        <div className="grid grid-cols-1 md:grid-cols-2 lg:grid-cols-3 gap-6">
-          {filteredAssets.map((asset) => (
-            <div
-              key={asset.id}
-              className={`p-6 rounded-2xl bg-transparent border-[4px] ${getAssetTypeBorder(asset.type)} shadow-lg hover:scale-105 transition-all`}
-            >
-              <div className="flex justify-between items-center mb-4">
-                <span className="px-3 py-1 rounded-full font-bold text-white bg-blue-800 bg-opacity-20">
-                  {asset.type}
-                </span>
-                <Star 
-                  className={`w-6 h-6 cursor-pointer ${watchlist.includes(asset.id) ? 'text-yellow-400 fill-yellow-400' : 'text-gray-400'}`}
-                  onClick={() => toggleWatchlist(asset.id)}
-                />
-              </div>
-              
-              <div className="flex justify-between mb-2">
-                <h3 className="text-lg font-semibold text-white">{asset.name}</h3>
-                <p className="text-white font-bold">{asset.symbol}</p>
-              </div>
-              
-              <div className="flex justify-between items-center">
-                <p className="text-2xl font-bold text-white">${asset.price.toLocaleString()}</p>
-                <div className={`flex items-center ${getChangeColor(asset.change)}`}>
-                  {asset.changePercent > 0 ? '+' : ''}{asset.changePercent.toFixed(2)}%
-                </div>
-              </div>
-              
-              <div className="mt-4 flex gap-2">
-                <button className="bg-sky-600 hover:bg-sky-700 text-white px-4 py-2 rounded-lg w-full transition-all">
-                  Buy
-                </button>
-                <button className="bg-gray-800 hover:bg-gray-900 text-white px-4 py-2 rounded-lg w-full transition-all">
-                  Details
-                </button>
-              </div>
-            </div>
-          ))}
+        {/* View mode toggle from StockDetails */}
+        <div className="flex justify-between items-center mb-8">
+          <h2 className="text-3xl font-bold text-cyan-400 drop-shadow-[0_0_10px_rgba(34,211,238,0.6)]">
+            Stock Details
+          </h2>
         </div>
+
+        {/* Pass the relevant props to StockDetails */}
+        <StockDetails
+          stocks={filteredAssets}
+          viewMode={viewMode}
+          requestSort={requestSort}
+          watchlist={watchlist}
+          toggleWatchlist={toggleWatchlist}
+        />
       </div>
     </div>
   );

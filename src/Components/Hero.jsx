@@ -1,8 +1,45 @@
+import { useEffect } from "react";
+
 const Hero = () => {
+  useEffect(() => {
+    // Load particles.js script dynamically
+    const script = document.createElement("script");
+    script.src = "https://cdn.jsdelivr.net/npm/particles.js@2.0.0/particles.min.js";
+    script.async = true;
+    script.onload = () => {
+        if (typeof particlesJS !== "undefined") {
+            particlesJS("particles-js", {
+                "particles": {
+                    "number": { "value": 80, "density": { "enable": true, "value_area": 800 }},
+                    "color": { "value": ["#00E0C7", "#8C52FF"] },
+                    "shape": { "type": "circle" },
+                    "opacity": { "value": 100, "random": true },
+                    "size": { "value": 3, "random": true },
+                    "line_linked": { "enable": true, "distance": 150, "color": "26C6DA", "opacity": 1.15, "width": 1 },
+                    "move": { "enable": true, "speed": 2, "random": true, "out_mode": "out" }
+                },
+                "interactivity": {
+                    "events": {
+                        "onhover": { "enable": true,},
+                        
+                    },
+                    
+                },
+                "retina_detect": true
+            });
+        }
+    };
+    document.body.appendChild(script);
+    
+    return () => {
+        document.body.removeChild(script);
+    };
+}, []);
   return (
     <section className="bg-gray-900 text-gray-200 py-32 relative">
+      
       {/* Subtle background glow effect */}
-      <div className="absolute w-full h-full top-0 left-0 bg-gradient-to-b from-gray-900 to-gray-800 opacity-80"></div>
+      <div className="absolute w-full h-full top-0 left-0 bg-gradient-to-b from-gray-900 to-gray-800 opacity-80 overflow-hidden"><div id="particles-js"></div></div>
 
       {/* Glowing orbs in background */}
       <div className="absolute w-32 h-32 top-1/4 left-1/4 rounded-full bg-cyan-900 blur-3xl opacity-20"></div>

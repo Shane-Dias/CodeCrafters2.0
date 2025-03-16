@@ -1,17 +1,18 @@
 import Navbar from "../Components/Navbar";
-import Hero from "../Components/Hero";
-import Home_Dash from "../Components/Home_Dash";
-import InvestmentSuggestions from "../Components/InvestmentSuggestions";
-import StockDetails from "../Components/StockDetails";
+
+import Landing from "../Components/Landing";
+import Features from "../Components/Features";
+import Testimony from "../Components/Testimony";
+import Perform from "../Components/Perform";
 
 const Home = () => {
   return (
     <div>
       <Navbar />
-      <Hero />
-      <StockDetails />
-      <Home_Dash />
-      <InvestmentSuggestions />
+      <Landing />
+      <Features />
+      <Perform />
+      <Testimony />
     </div>
   );
 };
