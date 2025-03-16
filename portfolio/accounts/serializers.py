@@ -7,6 +7,7 @@ class UserSerializer(serializers.ModelSerializer):
     class Meta:
         model = CustomUser
         fields = ['id', 'email', 'phone_number', 'address', 'bank_account', 'password']
+        read_only_fields = ['id']
 
     def create(self, validated_data):
         user = CustomUser.objects.create_user(
@@ -25,4 +26,10 @@ class StockPurchaseSerializer(serializers.ModelSerializer):
     class Meta:
         model = StockPurchase
         fields = ['id', 'user', 'symbol', 'company_name', 'price', 'quantity', 'purchased_at']
+
+class StockPurchaseSerializer1(serializers.ModelSerializer):
+    class Meta:
+        model = StockPurchase
+        fields = ['id', 'symbol', 'company_name', 'price', 'quantity', 'purchased_at']
+        read_only_fields = ['id', 'purchased_at']
 
