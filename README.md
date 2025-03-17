@@ -119,6 +119,3 @@ The Investment Portal is a comprehensive financial management platform that allo
 ## License
 This project is licensed under the **MIT License**.
 
-## Contact
-For queries or contributions, reach out at [your-email@example.com](mailto:your-email@example.com).
-
